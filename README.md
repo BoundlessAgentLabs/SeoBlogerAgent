@@ -16,17 +16,18 @@ The repository is for learning, research, and open-source experimentation. Do no
 
 ## Current MVP
 
-Round 1 now includes a working Next.js App Router foundation:
+The current MVP includes a working Next.js App Router foundation:
 
 - Machine-readable Super Page JSON schema: `content/schemas/super-page.schema.json`
 - Positive sample fixture: `content/articles/demo-super-page/article.json`
 - Negative validation fixtures: `content/articles/negative-*`
 - Content and SEO validator: `scripts/validate-content.ts`
-- Deterministic mock generation pipeline: `scripts/generate-mock.ts`
-- Provider-neutral model routing contract: `src/models/gateway.ts`
-- Image prompt and mock adapter contracts: `src/images/`
-- Rendered article preview: `app/articles/[slug]/page.tsx`
-- Authoring workflow UI: `app/workflow/page.tsx`
+- Deterministic mock generation pipeline for all sections: `scripts/generate-mock.ts`
+- Provider-neutral mock/live model routing contract: `src/models/gateway.ts`
+- Image prompt, mock adapter, and credential-safe live-attempt contracts: `src/images/`
+- Executable authoring workflow UI with topic, structure, block, image, and quality states: `app/workflow/page.tsx`
+- Rendered article preview with per-section generation audit panels: `app/articles/[slug]/page.tsx`
+- Sitemap compatibility: `app/sitemap.ts`
 
 ## Quick Start
 
@@ -70,6 +71,7 @@ This writes deterministic artifacts to:
 content/articles/demo-super-page/generated/generation-log.json
 content/articles/demo-super-page/generated/image-metadata.json
 content/articles/demo-super-page/generated/quality-report.json
+content/articles/demo-super-page/generated/image-live-attempts.json
 ```
 
 ### Build
@@ -84,7 +86,7 @@ The build statically renders the home page, workflow page, and sample article ro
 
 The content engine is provider-neutral. The local default preference is `codex5.5pro`, but runtime configuration can route work to Codex/OpenAI-compatible models, Gemini, DeepSeek, Kimi/Moonshot, or future providers.
 
-Provider-neutral environment variables:
+Provider-neutral environment variables. Mock mode is the default; live mode requires explicit credentials and provider URLs:
 
 ```text
 AI_PROVIDER
@@ -95,6 +97,8 @@ IMAGE_AI_PROVIDER
 IMAGE_AI_MODEL
 IMAGE_AI_BASE_URL
 IMAGE_AI_API_KEY
+CODEX_IMAGEN2_API_BASE_URL
+AI_LIVE
 ```
 
 The owner's machine may reuse private provider settings from:
@@ -117,7 +121,7 @@ Only variable names are documented. Secret values are not stored in this reposit
 - `docs/architecture/model-routing.md` — provider-neutral model routing design.
 - `docs/architecture/initial-architecture.md` — initial system architecture.
 - `docs/ui/kimi-consult-brief.md` — future UI design consultation brief.
-- `docs/ui/kimi-review-log.md` — Round 1 Kimi UI review attempt and failure log.
+- `docs/ui/kimi-review-log.md` — Kimi CLI UI review attempts and applied UI critique.
 - `docs/operations/humanize.md` — Humanize install, RLCR, and side-work operations.
 
 ## Safety Notes

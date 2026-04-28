@@ -32,6 +32,8 @@
       "evidence": "Title, description, canonical, Open Graph, breadcrumbs, and image alt text are present."
     }
   ],
+  "computedContentStatus": "pass",
+  "computedContentIssues": [],
   "seo": {
     "valid": true,
     "errors": [],
@@ -44,18 +46,465 @@
   "sectionLogs": [
     {
       "sectionId": "structure-first",
-      "provider": "openai-compatible",
-      "model": "codex5.5pro",
-      "mode": "mock",
-      "output": "[mock:section-rewrite] Start with a Super Page schema before writing A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text."
+      "promptIds": [
+        "section-rewrite-v1",
+        "fact-review-v1",
+        "tone-review-v1",
+        "unsupported-stat-review-v1",
+        "fake-citation-review-v1"
+      ],
+      "rewrite": {
+        "provider": "openai-compatible",
+        "model": "codex5.5pro",
+        "mode": "mock",
+        "task": "section-rewrite",
+        "promptId": "section-rewrite-v1",
+        "request": {
+          "system": "You rewrite SEO article sections with concrete examples, caveats, and source discipline. Return only valid JSON.",
+          "user": "Keyword: AI SEO super page generator\n\nSection: Start with a Super Page schema before writing\n\nSearch intent: The reader wants to understand what separates a Super Page from an ordinary long-form blog post.\n\nSummary claim: A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text.\n\nSource notes:\n- Google people-first baseline (research): Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.\n- Product workflow assumption (assumption): Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.\n\nMust include: specific example, practical caveat, reader benefit\nAvoid phrases: In today's digital age, unlock the power, delve into, game changer\nClaim policy: Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.\nCitation policy: If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation.\n\nCurrent examples: For a software comparison page, the schema can require a decision table, best-for labels, caveats, and a final recommendation checklist.\n\nCurrent caveats: The schema should guide quality without forcing every keyword into the same rigid layout.\n\nReturn two rewritten paragraphs, examples, caveats, and a concise quality note.",
+          "expectedJsonShape": "{ \"paragraphs\": string[], \"examples\": string[], \"caveats\": string[], \"qualityNotes\": string[] }"
+        },
+        "output": {
+          "paragraphs": [
+            "A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. A useful rewrite keeps the section focused on the reader wants to understand what separates a super page from an ordinary long-form blog post. while adding specific example, practical caveat, reader benefit.",
+            "For implementation, the editor should see why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
+          ],
+          "examples": [
+            "For a software comparison page, the schema can require a decision table, best-for labels, caveats, and a final recommendation checklist."
+          ],
+          "caveats": [
+            "The schema should guide quality without forcing every keyword into the same rigid layout."
+          ],
+          "qualityNotes": [
+            "Mock rewrite used 2 source notes and 3 must-include constraints."
+          ]
+        },
+        "rawText": "{\"paragraphs\":[\"A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. A useful rewrite keeps the section focused on the reader wants to understand what separates a super page from an ordinary long-form blog post. while adding specific example, practical caveat, reader benefit.\",\"For implementation, the editor should see why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article.\"],\"examples\":[\"For a software comparison page, the schema can require a decision table, best-for labels, caveats, and a final recommendation checklist.\"],\"caveats\":[\"The schema should guide quality without forcing every keyword into the same rigid layout.\"],\"qualityNotes\":[\"Mock rewrite used 2 source notes and 3 must-include constraints.\"]}",
+        "warnings": []
+      },
+      "reviews": {
+        "factReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "fact-review",
+          "promptId": "fact-review-v1",
+          "request": {
+            "system": "You identify unsupported claims, fake statistics, and fake citations. Return only valid JSON.",
+            "user": "Section: Start with a Super Page schema before writing\n\nSource notes:\n- Google people-first baseline (research): Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.\n- Product workflow assumption (assumption): Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.\n\nParagraphs:\nThe first useful step is not asking a model to write a complete article. It is defining the page contract: what the hero answer must prove, which sections satisfy search sub-intents, where images are needed, which internal links support topical authority, and what quality gates must pass before publishing.\n\nThis approach gives the team a reusable structure that can be validated before any expensive model call runs. If a generated outline lacks FAQs, image slots, metadata, or internal links, the system can fail early with a precise error instead of letting a weak article reach the editor.\n\nFlag statistics, percentages, dates, quotes, studies, or citations not grounded in the source notes.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"warn\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "toneReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "tone-review",
+          "promptId": "tone-review-v1",
+          "request": {
+            "system": "You detect generic AI writing patterns and repeated intros. Return only valid JSON.",
+            "user": "Avoid phrases: In today's digital age, unlock the power, delve into, game changer\n\nParagraphs:\nThe first useful step is not asking a model to write a complete article. It is defining the page contract: what the hero answer must prove, which sections satisfy search sub-intents, where images are needed, which internal links support topical authority, and what quality gates must pass before publishing.\n\nThis approach gives the team a reusable structure that can be validated before any expensive model call runs. If a generated outline lacks FAQs, image slots, metadata, or internal links, the system can fail early with a precise error instead of letting a weak article reach the editor.\n\nFlag mechanical openings, repeated cadence, and filler phrases.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"warn\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "statReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "unsupported-stat-review",
+          "promptId": "unsupported-stat-review-v1",
+          "request": {
+            "system": "You reject unsupported statistics. Return only valid JSON.",
+            "user": "Review for unsupported numbers in section Start with a Super Page schema before writing:\nThe first useful step is not asking a model to write a complete article. It is defining the page contract: what the hero answer must prove, which sections satisfy search sub-intents, where images are needed, which internal links support topical authority, and what quality gates must pass before publishing.\n\nThis approach gives the team a reusable structure that can be validated before any expensive model call runs. If a generated outline lacks FAQs, image slots, metadata, or internal links, the system can fail early with a precise error instead of letting a weak article reach the editor.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "citationReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "fake-citation-review",
+          "promptId": "fake-citation-review-v1",
+          "request": {
+            "system": "You reject fabricated citations, fake papers, and unverifiable source names. Return only valid JSON.",
+            "user": "Review for fake citations in section Start with a Super Page schema before writing:\nThe first useful step is not asking a model to write a complete article. It is defining the page contract: what the hero answer must prove, which sections satisfy search sub-intents, where images are needed, which internal links support topical authority, and what quality gates must pass before publishing.\n\nThis approach gives the team a reusable structure that can be validated before any expensive model call runs. If a generated outline lacks FAQs, image slots, metadata, or internal links, the system can fail early with a precise error instead of letting a weak article reach the editor.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "computedIssues": []
+      },
+      "qualityStatus": "pass"
     },
     {
       "sectionId": "block-rewriting",
-      "provider": "openai-compatible",
-      "model": "codex5.5pro",
-      "mode": "mock",
-      "output": "[mock:section-rewrite] Rewrite each block with context and constraints Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence."
+      "promptIds": [
+        "section-rewrite-v1",
+        "fact-review-v1",
+        "tone-review-v1",
+        "unsupported-stat-review-v1",
+        "fake-citation-review-v1"
+      ],
+      "rewrite": {
+        "provider": "openai-compatible",
+        "model": "codex5.5pro",
+        "mode": "mock",
+        "task": "section-rewrite",
+        "promptId": "section-rewrite-v1",
+        "request": {
+          "system": "You rewrite SEO article sections with concrete examples, caveats, and source discipline. Return only valid JSON.",
+          "user": "Keyword: AI SEO super page generator\n\nSection: Rewrite each block with context and constraints\n\nSearch intent: The reader wants a practical way to make AI content feel less generic.\n\nSummary claim: Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence.\n\nSource notes:\n- Google people-first baseline (research): Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.\n- Product workflow assumption (assumption): Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.\n\nMust include: specific example, practical caveat, reader benefit\nAvoid phrases: In today's digital age, unlock the power, delve into, game changer\nClaim policy: Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.\nCitation policy: If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation.\n\nCurrent examples: A section about image quality can require one concrete artifact checklist: distorted hands, unreadable text, plastic textures, impossible reflections, and generic stock-photo framing.\n\nCurrent caveats: Block rewriting still needs source discipline; smaller prompts do not automatically make factual claims reliable.\n\nReturn two rewritten paragraphs, examples, caveats, and a concise quality note.",
+          "expectedJsonShape": "{ \"paragraphs\": string[], \"examples\": string[], \"caveats\": string[], \"qualityNotes\": string[] }"
+        },
+        "output": {
+          "paragraphs": [
+            "Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. A useful rewrite keeps the section focused on the reader wants a practical way to make ai content feel less generic. while adding specific example, practical caveat, reader benefit.",
+            "For implementation, the editor should see why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
+          ],
+          "examples": [
+            "A section about image quality can require one concrete artifact checklist: distorted hands, unreadable text, plastic textures, impossible reflections, and generic stock-photo framing."
+          ],
+          "caveats": [
+            "Block rewriting still needs source discipline; smaller prompts do not automatically make factual claims reliable."
+          ],
+          "qualityNotes": [
+            "Mock rewrite used 2 source notes and 3 must-include constraints."
+          ]
+        },
+        "rawText": "{\"paragraphs\":[\"Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. A useful rewrite keeps the section focused on the reader wants a practical way to make ai content feel less generic. while adding specific example, practical caveat, reader benefit.\",\"For implementation, the editor should see why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article.\"],\"examples\":[\"A section about image quality can require one concrete artifact checklist: distorted hands, unreadable text, plastic textures, impossible reflections, and generic stock-photo framing.\"],\"caveats\":[\"Block rewriting still needs source discipline; smaller prompts do not automatically make factual claims reliable.\"],\"qualityNotes\":[\"Mock rewrite used 2 source notes and 3 must-include constraints.\"]}",
+        "warnings": []
+      },
+      "reviews": {
+        "factReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "fact-review",
+          "promptId": "fact-review-v1",
+          "request": {
+            "system": "You identify unsupported claims, fake statistics, and fake citations. Return only valid JSON.",
+            "user": "Section: Rewrite each block with context and constraints\n\nSource notes:\n- Google people-first baseline (research): Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.\n- Product workflow assumption (assumption): Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.\n\nParagraphs:\nA block-based rewrite pipeline gives each section its own intent, source notes, examples, and anti-AI-tone constraints. The model does not need to invent a full article arc every time; it only needs to improve a focused block while preserving the page plan.\n\nThe reviewer can then reject mechanical openings, unsupported statistics, fake citations, or paragraphs that repeat the same rhythm. This is harder to enforce when the entire article is produced as a single response, because failures are mixed together with otherwise usable sections.\n\nFlag statistics, percentages, dates, quotes, studies, or citations not grounded in the source notes.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"warn\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "toneReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "tone-review",
+          "promptId": "tone-review-v1",
+          "request": {
+            "system": "You detect generic AI writing patterns and repeated intros. Return only valid JSON.",
+            "user": "Avoid phrases: In today's digital age, unlock the power, delve into, game changer\n\nParagraphs:\nA block-based rewrite pipeline gives each section its own intent, source notes, examples, and anti-AI-tone constraints. The model does not need to invent a full article arc every time; it only needs to improve a focused block while preserving the page plan.\n\nThe reviewer can then reject mechanical openings, unsupported statistics, fake citations, or paragraphs that repeat the same rhythm. This is harder to enforce when the entire article is produced as a single response, because failures are mixed together with otherwise usable sections.\n\nFlag mechanical openings, repeated cadence, and filler phrases.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"warn\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "statReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "unsupported-stat-review",
+          "promptId": "unsupported-stat-review-v1",
+          "request": {
+            "system": "You reject unsupported statistics. Return only valid JSON.",
+            "user": "Review for unsupported numbers in section Rewrite each block with context and constraints:\nA block-based rewrite pipeline gives each section its own intent, source notes, examples, and anti-AI-tone constraints. The model does not need to invent a full article arc every time; it only needs to improve a focused block while preserving the page plan.\n\nThe reviewer can then reject mechanical openings, unsupported statistics, fake citations, or paragraphs that repeat the same rhythm. This is harder to enforce when the entire article is produced as a single response, because failures are mixed together with otherwise usable sections.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "citationReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "fake-citation-review",
+          "promptId": "fake-citation-review-v1",
+          "request": {
+            "system": "You reject fabricated citations, fake papers, and unverifiable source names. Return only valid JSON.",
+            "user": "Review for fake citations in section Rewrite each block with context and constraints:\nA block-based rewrite pipeline gives each section its own intent, source notes, examples, and anti-AI-tone constraints. The model does not need to invent a full article arc every time; it only needs to improve a focused block while preserving the page plan.\n\nThe reviewer can then reject mechanical openings, unsupported statistics, fake citations, or paragraphs that repeat the same rhythm. This is harder to enforce when the entire article is produced as a single response, because failures are mixed together with otherwise usable sections.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "computedIssues": []
+      },
+      "qualityStatus": "pass"
+    },
+    {
+      "sectionId": "image-quality",
+      "promptIds": [
+        "section-rewrite-v1",
+        "fact-review-v1",
+        "tone-review-v1",
+        "unsupported-stat-review-v1",
+        "fake-citation-review-v1"
+      ],
+      "rewrite": {
+        "provider": "openai-compatible",
+        "model": "codex5.5pro",
+        "mode": "mock",
+        "task": "section-rewrite",
+        "promptId": "section-rewrite-v1",
+        "request": {
+          "system": "You rewrite SEO article sections with concrete examples, caveats, and source discipline. Return only valid JSON.",
+          "user": "Keyword: AI SEO super page generator\n\nSection: Make image generation part of the article plan\n\nSearch intent: The reader wants to know how image prompts can improve SEO content quality and user trust.\n\nSummary claim: Article images should explain the topic or demonstrate a workflow, not merely decorate the page.\n\nSource notes:\n- Google people-first baseline (research): Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.\n- Product workflow assumption (assumption): Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.\n\nMust include: specific example, practical caveat, reader benefit\nAvoid phrases: In today's digital age, unlock the power, delve into, game changer\nClaim policy: Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.\nCitation policy: If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation.\n\nCurrent examples: Instead of asking for 'SEO dashboard image', ask for a realistic editorial photo of an analyst reviewing content briefs, with no readable UI text and no floating holographic icons.\n\nCurrent caveats: Some topics are better served by diagrams or annotated screenshots than photorealistic hero images.\n\nReturn two rewritten paragraphs, examples, caveats, and a concise quality note.",
+          "expectedJsonShape": "{ \"paragraphs\": string[], \"examples\": string[], \"caveats\": string[], \"qualityNotes\": string[] }"
+        },
+        "output": {
+          "paragraphs": [
+            "Article images should explain the topic or demonstrate a workflow, not merely decorate the page. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. A useful rewrite keeps the section focused on the reader wants to know how image prompts can improve seo content quality and user trust. while adding specific example, practical caveat, reader benefit.",
+            "For implementation, the editor should see why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
+          ],
+          "examples": [
+            "Instead of asking for 'SEO dashboard image', ask for a realistic editorial photo of an analyst reviewing content briefs, with no readable UI text and no floating holographic icons."
+          ],
+          "caveats": [
+            "Some topics are better served by diagrams or annotated screenshots than photorealistic hero images."
+          ],
+          "qualityNotes": [
+            "Mock rewrite used 2 source notes and 3 must-include constraints."
+          ]
+        },
+        "rawText": "{\"paragraphs\":[\"Article images should explain the topic or demonstrate a workflow, not merely decorate the page. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. A useful rewrite keeps the section focused on the reader wants to know how image prompts can improve seo content quality and user trust. while adding specific example, practical caveat, reader benefit.\",\"For implementation, the editor should see why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article.\"],\"examples\":[\"Instead of asking for 'SEO dashboard image', ask for a realistic editorial photo of an analyst reviewing content briefs, with no readable UI text and no floating holographic icons.\"],\"caveats\":[\"Some topics are better served by diagrams or annotated screenshots than photorealistic hero images.\"],\"qualityNotes\":[\"Mock rewrite used 2 source notes and 3 must-include constraints.\"]}",
+        "warnings": []
+      },
+      "reviews": {
+        "factReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "fact-review",
+          "promptId": "fact-review-v1",
+          "request": {
+            "system": "You identify unsupported claims, fake statistics, and fake citations. Return only valid JSON.",
+            "user": "Section: Make image generation part of the article plan\n\nSource notes:\n- Google people-first baseline (research): Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.\n- Product workflow assumption (assumption): Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.\n\nParagraphs:\nImage generation works better when the article schema stores the image purpose, prompt context, realism constraints, avoid-list, alt text, caption, provider, and QA status. The image is no longer a disposable illustration; it becomes a reviewed article asset with provenance.\n\nFor AI SEO pages, the most important prompt details are usually mundane: plausible environment, real tools, natural lighting, readable composition, and explicit avoidance of fake interface text. These constraints reduce the visual AI smell that makes generated blogs feel cheap.\n\nFlag statistics, percentages, dates, quotes, studies, or citations not grounded in the source notes.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"warn\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "toneReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "tone-review",
+          "promptId": "tone-review-v1",
+          "request": {
+            "system": "You detect generic AI writing patterns and repeated intros. Return only valid JSON.",
+            "user": "Avoid phrases: In today's digital age, unlock the power, delve into, game changer\n\nParagraphs:\nImage generation works better when the article schema stores the image purpose, prompt context, realism constraints, avoid-list, alt text, caption, provider, and QA status. The image is no longer a disposable illustration; it becomes a reviewed article asset with provenance.\n\nFor AI SEO pages, the most important prompt details are usually mundane: plausible environment, real tools, natural lighting, readable composition, and explicit avoidance of fake interface text. These constraints reduce the visual AI smell that makes generated blogs feel cheap.\n\nFlag mechanical openings, repeated cadence, and filler phrases.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"warn\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "statReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "unsupported-stat-review",
+          "promptId": "unsupported-stat-review-v1",
+          "request": {
+            "system": "You reject unsupported statistics. Return only valid JSON.",
+            "user": "Review for unsupported numbers in section Make image generation part of the article plan:\nImage generation works better when the article schema stores the image purpose, prompt context, realism constraints, avoid-list, alt text, caption, provider, and QA status. The image is no longer a disposable illustration; it becomes a reviewed article asset with provenance.\n\nFor AI SEO pages, the most important prompt details are usually mundane: plausible environment, real tools, natural lighting, readable composition, and explicit avoidance of fake interface text. These constraints reduce the visual AI smell that makes generated blogs feel cheap.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "citationReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "fake-citation-review",
+          "promptId": "fake-citation-review-v1",
+          "request": {
+            "system": "You reject fabricated citations, fake papers, and unverifiable source names. Return only valid JSON.",
+            "user": "Review for fake citations in section Make image generation part of the article plan:\nImage generation works better when the article schema stores the image purpose, prompt context, realism constraints, avoid-list, alt text, caption, provider, and QA status. The image is no longer a disposable illustration; it becomes a reviewed article asset with provenance.\n\nFor AI SEO pages, the most important prompt details are usually mundane: plausible environment, real tools, natural lighting, readable composition, and explicit avoidance of fake interface text. These constraints reduce the visual AI smell that makes generated blogs feel cheap.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "computedIssues": []
+      },
+      "qualityStatus": "pass"
+    },
+    {
+      "sectionId": "quality-gates",
+      "promptIds": [
+        "section-rewrite-v1",
+        "fact-review-v1",
+        "tone-review-v1",
+        "unsupported-stat-review-v1",
+        "fake-citation-review-v1"
+      ],
+      "rewrite": {
+        "provider": "openai-compatible",
+        "model": "codex5.5pro",
+        "mode": "mock",
+        "task": "section-rewrite",
+        "promptId": "section-rewrite-v1",
+        "request": {
+          "system": "You rewrite SEO article sections with concrete examples, caveats, and source discipline. Return only valid JSON.",
+          "user": "Keyword: AI SEO super page generator\n\nSection: Show quality gates before publishing\n\nSearch intent: The reader wants assurance that AI output will not be published blindly.\n\nSummary claim: Visible quality gates make the tool more trustworthy for both developers and editors.\n\nSource notes:\n- Google people-first baseline (research): Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.\n- Product workflow assumption (assumption): Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.\n\nMust include: specific example, practical caveat, reader benefit\nAvoid phrases: In today's digital age, unlock the power, delve into, game changer\nClaim policy: Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.\nCitation policy: If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation.\n\nCurrent examples: A quality report can mark tone as pass, image relevance as warn, and citation coverage as fail, blocking a publish-ready label until the failure is resolved.\n\nCurrent caveats: Quality gates are guardrails, not a replacement for editorial judgment on high-risk topics.\n\nReturn two rewritten paragraphs, examples, caveats, and a concise quality note.",
+          "expectedJsonShape": "{ \"paragraphs\": string[], \"examples\": string[], \"caveats\": string[], \"qualityNotes\": string[] }"
+        },
+        "output": {
+          "paragraphs": [
+            "Visible quality gates make the tool more trustworthy for both developers and editors. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. A useful rewrite keeps the section focused on the reader wants assurance that ai output will not be published blindly. while adding specific example, practical caveat, reader benefit.",
+            "For implementation, the editor should see why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
+          ],
+          "examples": [
+            "A quality report can mark tone as pass, image relevance as warn, and citation coverage as fail, blocking a publish-ready label until the failure is resolved."
+          ],
+          "caveats": [
+            "Quality gates are guardrails, not a replacement for editorial judgment on high-risk topics."
+          ],
+          "qualityNotes": [
+            "Mock rewrite used 2 source notes and 3 must-include constraints."
+          ]
+        },
+        "rawText": "{\"paragraphs\":[\"Visible quality gates make the tool more trustworthy for both developers and editors. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. A useful rewrite keeps the section focused on the reader wants assurance that ai output will not be published blindly. while adding specific example, practical caveat, reader benefit.\",\"For implementation, the editor should see why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article.\"],\"examples\":[\"A quality report can mark tone as pass, image relevance as warn, and citation coverage as fail, blocking a publish-ready label until the failure is resolved.\"],\"caveats\":[\"Quality gates are guardrails, not a replacement for editorial judgment on high-risk topics.\"],\"qualityNotes\":[\"Mock rewrite used 2 source notes and 3 must-include constraints.\"]}",
+        "warnings": []
+      },
+      "reviews": {
+        "factReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "fact-review",
+          "promptId": "fact-review-v1",
+          "request": {
+            "system": "You identify unsupported claims, fake statistics, and fake citations. Return only valid JSON.",
+            "user": "Section: Show quality gates before publishing\n\nSource notes:\n- Google people-first baseline (research): Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.\n- Product workflow assumption (assumption): Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.\n\nParagraphs:\nA useful open-source SEO writing tool should show what passed, what failed, and what still needs a human decision. The publish state should not hide weak factual support, missing alt text, duplicate canonical URLs, or images marked for regeneration.\n\nThe quality report should live with the article artifact so teams can reproduce why a page was considered ready. This also makes model experiments easier because each provider can be compared against the same acceptance criteria.\n\nFlag statistics, percentages, dates, quotes, studies, or citations not grounded in the source notes.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"warn\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "toneReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "tone-review",
+          "promptId": "tone-review-v1",
+          "request": {
+            "system": "You detect generic AI writing patterns and repeated intros. Return only valid JSON.",
+            "user": "Avoid phrases: In today's digital age, unlock the power, delve into, game changer\n\nParagraphs:\nA useful open-source SEO writing tool should show what passed, what failed, and what still needs a human decision. The publish state should not hide weak factual support, missing alt text, duplicate canonical URLs, or images marked for regeneration.\n\nThe quality report should live with the article artifact so teams can reproduce why a page was considered ready. This also makes model experiments easier because each provider can be compared against the same acceptance criteria.\n\nFlag mechanical openings, repeated cadence, and filler phrases.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"warn\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "statReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "unsupported-stat-review",
+          "promptId": "unsupported-stat-review-v1",
+          "request": {
+            "system": "You reject unsupported statistics. Return only valid JSON.",
+            "user": "Review for unsupported numbers in section Show quality gates before publishing:\nA useful open-source SEO writing tool should show what passed, what failed, and what still needs a human decision. The publish state should not hide weak factual support, missing alt text, duplicate canonical URLs, or images marked for regeneration.\n\nThe quality report should live with the article artifact so teams can reproduce why a page was considered ready. This also makes model experiments easier because each provider can be compared against the same acceptance criteria.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "citationReview": {
+          "provider": "openai-compatible",
+          "model": "codex5.5pro",
+          "mode": "mock",
+          "task": "fake-citation-review",
+          "promptId": "fake-citation-review-v1",
+          "request": {
+            "system": "You reject fabricated citations, fake papers, and unverifiable source names. Return only valid JSON.",
+            "user": "Review for fake citations in section Show quality gates before publishing:\nA useful open-source SEO writing tool should show what passed, what failed, and what still needs a human decision. The publish state should not hide weak factual support, missing alt text, duplicate canonical URLs, or images marked for regeneration.\n\nThe quality report should live with the article artifact so teams can reproduce why a page was considered ready. This also makes model experiments easier because each provider can be compared against the same acceptance criteria.",
+            "expectedJsonShape": "{ \"status\": \"pass\"|\"fail\", \"issues\": string[] }"
+          },
+          "output": {
+            "status": "pass",
+            "issues": []
+          },
+          "rawText": "{\"status\":\"pass\",\"issues\":[]}",
+          "warnings": []
+        },
+        "computedIssues": []
+      },
+      "qualityStatus": "pass"
     }
   ],
-  "imageCount": 4
+  "imageCount": 4,
+  "liveImageAttemptsBlocked": 4
 }

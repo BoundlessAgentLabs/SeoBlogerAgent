@@ -1,0 +1,22 @@
+[
+  {
+    "id": "generic-intro",
+    "expected": "fail",
+    "text": "In today's digital age, it is important to note that SEO content can unlock the power of your brand. This generic opener should fail the quality gate."
+  },
+  {
+    "id": "unsupported-statistic",
+    "expected": "fail",
+    "text": "Teams that use this workflow get 87% more traffic in 30 days, with no source note or documented evidence attached."
+  },
+  {
+    "id": "fake-citation",
+    "expected": "fail",
+    "text": "According to a recent study from the Journal of AI SEO, structured content guarantees first-page rankings for every site."
+  },
+  {
+    "id": "specific-grounded-block",
+    "expected": "pass",
+    "text": "A structured section should explain its intent, show one concrete editorial example, and name the caveat that still needs a human review."
+  }
+]

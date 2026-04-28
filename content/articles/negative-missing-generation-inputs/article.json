@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "slug": "ai-seo-super-page-generator",
+  "slug": "missing-generation-inputs",
   "brief": {
     "keyword": "AI SEO super page generator",
     "intent": "mixed",
@@ -11,7 +11,7 @@
   "metadata": {
     "title": "AI SEO Super Page Generator: Open Workflow Blueprint",
     "description": "A practical blueprint for generating SEO Super Pages with block-based AI writing, realistic image prompts, quality gates, and transparent metadata.",
-    "canonicalUrl": "https://example.com/articles/ai-seo-super-page-generator",
+    "canonicalUrl": "https://example.com/articles/missing-generation-inputs",
     "updatedAt": "2026-04-28",
     "author": "Boundless Agent Labs",
     "openGraph": {
@@ -68,34 +68,7 @@
       "imageSlotId": "hero-workflow",
       "qualityNotes": [
         "Every section maps to an explicit search sub-intent and quality note."
-      ],
-      "sourceNotes": [
-        {
-          "label": "Google people-first baseline",
-          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.",
-          "sourceType": "research"
-        },
-        {
-          "label": "Product workflow assumption",
-          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.",
-          "sourceType": "assumption"
-        }
-      ],
-      "generationConstraints": {
-        "mustInclude": [
-          "specific example",
-          "practical caveat",
-          "reader benefit"
-        ],
-        "avoidPhrases": [
-          "In today's digital age",
-          "unlock the power",
-          "delve into",
-          "game changer"
-        ],
-        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
-        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
-      }
+      ]
     },
     {
       "id": "block-rewriting",
@@ -115,34 +88,7 @@
       "imageSlotId": "section-editor",
       "qualityNotes": [
         "Section includes concrete examples and avoids vague SEO filler."
-      ],
-      "sourceNotes": [
-        {
-          "label": "Google people-first baseline",
-          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.",
-          "sourceType": "research"
-        },
-        {
-          "label": "Product workflow assumption",
-          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.",
-          "sourceType": "assumption"
-        }
-      ],
-      "generationConstraints": {
-        "mustInclude": [
-          "specific example",
-          "practical caveat",
-          "reader benefit"
-        ],
-        "avoidPhrases": [
-          "In today's digital age",
-          "unlock the power",
-          "delve into",
-          "game changer"
-        ],
-        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
-        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
-      }
+      ]
     },
     {
       "id": "image-quality",
@@ -162,34 +108,7 @@
       "imageSlotId": "image-gallery",
       "qualityNotes": [
         "Image prompt contains explicit realism constraints and avoid-list."
-      ],
-      "sourceNotes": [
-        {
-          "label": "Google people-first baseline",
-          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.",
-          "sourceType": "research"
-        },
-        {
-          "label": "Product workflow assumption",
-          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.",
-          "sourceType": "assumption"
-        }
-      ],
-      "generationConstraints": {
-        "mustInclude": [
-          "specific example",
-          "practical caveat",
-          "reader benefit"
-        ],
-        "avoidPhrases": [
-          "In today's digital age",
-          "unlock the power",
-          "delve into",
-          "game changer"
-        ],
-        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
-        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
-      }
+      ]
     },
     {
       "id": "quality-gates",
@@ -209,34 +128,7 @@
       "imageSlotId": "quality-report",
       "qualityNotes": [
         "Quality states are visible and cannot be collapsed into a false publish-ready state."
-      ],
-      "sourceNotes": [
-        {
-          "label": "Google people-first baseline",
-          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.",
-          "sourceType": "research"
-        },
-        {
-          "label": "Product workflow assumption",
-          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.",
-          "sourceType": "assumption"
-        }
-      ],
-      "generationConstraints": {
-        "mustInclude": [
-          "specific example",
-          "practical caveat",
-          "reader benefit"
-        ],
-        "avoidPhrases": [
-          "In today's digital age",
-          "unlock the power",
-          "delve into",
-          "game changer"
-        ],
-        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
-        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
-      }
+      ]
     }
   ],
   "faq": [

@@ -1,9 +1,8 @@
 [
   {
-    "provider": "mock",
-    "mode": "mock",
+    "provider": "codex-imagen2api",
+    "mode": "blocked",
     "imageSlotId": "hero-workflow",
-    "assetPath": "/mock-images/hero-workflow.svg",
     "metadata": {
       "imageSlotId": "hero-workflow",
       "provider": "mock",
@@ -18,13 +17,26 @@
         "notes": "Mock vector placeholder is acceptable for deterministic validation but should be replaced by a generated image later."
       }
     },
+    "providerRequest": {
+      "url": "/v1/chat/completions",
+      "body": {
+        "model": "gpt-4o-image",
+        "stream": false,
+        "messages": [
+          {
+            "role": "user",
+            "content": "Subject: Editorial workspace showing structured SEO article planning on a large monitor\nContext: A realistic content strategist desk with notes, page outline cards, and image prompt checklist\nComposition: Wide hero image with the workspace centered and calm negative space for headline overlay\nRealism constraints: natural screen glow; realistic desk materials; no impossible reflections\nAvoid: floating holograms; unreadable text; distorted hands; brand logos\nNo logos, watermarks, or readable fake UI text unless explicitly requested."
+          }
+        ]
+      }
+    },
+    "blocker": "Missing CODEX_IMAGEN2_API_BASE_URL or IMAGE_AI_BASE_URL for CodexImagen2API image generation.",
     "regenerationRecommended": false
   },
   {
-    "provider": "mock",
-    "mode": "mock",
+    "provider": "codex-imagen2api",
+    "mode": "blocked",
     "imageSlotId": "section-editor",
-    "assetPath": "/mock-images/section-editor.svg",
     "metadata": {
       "imageSlotId": "section-editor",
       "provider": "mock",
@@ -39,13 +51,26 @@
         "notes": "Prompt metadata is complete; mock asset keeps test runs deterministic."
       }
     },
+    "providerRequest": {
+      "url": "/v1/chat/completions",
+      "body": {
+        "model": "gpt-4o-image",
+        "stream": false,
+        "messages": [
+          {
+            "role": "user",
+            "content": "Subject: A focused editor reviewing paragraph blocks and quality notes\nContext: Realistic laptop and printed editorial checklist in a quiet office\nComposition: Over-the-shoulder view with no readable proprietary interface text\nRealism constraints: natural posture; legible but abstract UI blocks; editorial documentary lighting\nAvoid: fake brand UI; extra fingers; glossy stock-photo look\nNo logos, watermarks, or readable fake UI text unless explicitly requested."
+          }
+        ]
+      }
+    },
+    "blocker": "Missing CODEX_IMAGEN2_API_BASE_URL or IMAGE_AI_BASE_URL for CodexImagen2API image generation.",
     "regenerationRecommended": false
   },
   {
-    "provider": "mock",
-    "mode": "mock",
+    "provider": "codex-imagen2api",
+    "mode": "blocked",
     "imageSlotId": "image-gallery",
-    "assetPath": "/mock-images/image-gallery.svg",
     "metadata": {
       "imageSlotId": "image-gallery",
       "provider": "mock",
@@ -60,13 +85,26 @@
         "notes": "Mock card layout documents the intended image review workflow."
       }
     },
+    "providerRequest": {
+      "url": "/v1/chat/completions",
+      "body": {
+        "model": "gpt-4o-image",
+        "stream": false,
+        "messages": [
+          {
+            "role": "user",
+            "content": "Subject: Article image gallery with prompt version cards and QA badges\nContext: Clean web application interface represented as abstract blocks without readable text\nComposition: Three image cards in a grid with subtle quality badges and prompt metadata\nRealism constraints: consistent lighting; no fake text; credible web app layout\nAvoid: watermarks; garbled labels; overly futuristic dashboard\nNo logos, watermarks, or readable fake UI text unless explicitly requested."
+          }
+        ]
+      }
+    },
+    "blocker": "Missing CODEX_IMAGEN2_API_BASE_URL or IMAGE_AI_BASE_URL for CodexImagen2API image generation.",
     "regenerationRecommended": false
   },
   {
-    "provider": "mock",
-    "mode": "mock",
+    "provider": "codex-imagen2api",
+    "mode": "blocked",
     "imageSlotId": "quality-report",
-    "assetPath": "/mock-images/quality-report.svg",
     "metadata": {
       "imageSlotId": "quality-report",
       "provider": "mock",
@@ -81,6 +119,20 @@
         "notes": "Diagram-style placeholder is appropriate for quality gate explanation."
       }
     },
+    "providerRequest": {
+      "url": "/v1/chat/completions",
+      "body": {
+        "model": "gpt-4o-image",
+        "stream": false,
+        "messages": [
+          {
+            "role": "user",
+            "content": "Subject: Quality report checklist for SEO article readiness\nContext: Minimal editorial dashboard with pass, warning, and fail states represented by shapes\nComposition: Vertical checklist diagram with clear hierarchy and no tiny text\nRealism constraints: clean diagram layout; accessible contrast; no pseudo-readable paragraphs\nAvoid: busy dashboard; tiny illegible text; brand logos\nNo logos, watermarks, or readable fake UI text unless explicitly requested."
+          }
+        ]
+      }
+    },
+    "blocker": "Missing CODEX_IMAGEN2_API_BASE_URL or IMAGE_AI_BASE_URL for CodexImagen2API image generation.",
     "regenerationRecommended": false
   }
 ]

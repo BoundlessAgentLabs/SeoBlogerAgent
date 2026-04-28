@@ -37,6 +37,17 @@ export interface SuperPage {
     paragraphs: string[];
     examples: string[];
     caveats: string[];
+    sourceNotes: Array<{
+      label: string;
+      note: string;
+      sourceType: "research" | "experience" | "competitor-observation" | "assumption" | "internal";
+    }>;
+    generationConstraints: {
+      mustInclude: string[];
+      avoidPhrases: string[];
+      claimPolicy: string;
+      citationPolicy: string;
+    };
     imageSlotId: string;
     qualityNotes: string[];
   }>;
