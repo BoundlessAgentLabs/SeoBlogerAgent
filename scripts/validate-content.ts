@@ -14,7 +14,7 @@ import { validateSuperPage, assertSuperPage } from "../src/super-page/validation
 import { articleJsonLd, breadcrumbJsonLd, serializeJsonLd } from "../src/seo/jsonLd";
 import { validateSeoReadiness } from "../src/seo/validation";
 import { validateImageReadiness } from "../src/images/validation";
-import { getDefaultArticle } from "../src/super-page/data";
+import { getArticleBySlug, getDefaultArticle, getGeneratedArticlePreview } from "../src/super-page/data";
 import { buildGeneratedProject } from "../src/workflow/generateProject";
 import type { SuperPage } from "../src/super-page/types";
 
@@ -47,8 +47,12 @@ function appRouteExists(href: string): boolean {
   const publicPath = join(process.cwd(), "public", normalized);
   if (existsSync(publicPath) && statSync(publicPath).isFile()) return true;
 
+  const segments = normalized.split("/");
+  if (segments[0] === "articles" && segments.length === 2) return getArticleBySlug(segments[1]) !== undefined;
+  if (segments[0] === "workflow" && segments[1] === "preview" && segments.length === 3) return getGeneratedArticlePreview(segments[2]) !== undefined;
+
   let routeDir = join(process.cwd(), "app");
-  for (const segment of normalized.split("/")) {
+  for (const segment of segments) {
     const exact = join(routeDir, segment);
     if (existsSync(exact) && statSync(exact).isDirectory()) {
       routeDir = exact;
@@ -76,6 +80,20 @@ function validateInternalLinkCases(validPages: SuperPage[]): number {
       console.log(`${passed ? "PASS" : "FAIL"} breadcrumb-link:${page.slug}:${crumb.href} expected=pass`);
       if (!passed) failures += 1;
     }
+  }
+  return failures;
+}
+
+function validateDynamicRouteNegativeCases(): number {
+  const cases = [
+    { id: "missing-article-slug", href: "/articles/not-a-real-slug" },
+    { id: "missing-preview-slug", href: "/workflow/preview/not-a-real-slug" },
+  ];
+  let failures = 0;
+  for (const item of cases) {
+    const passed = !appRouteExists(item.href);
+    console.log(`${passed ? "PASS" : "FAIL"} dynamic-link:${item.id} expected=fail`);
+    if (!passed) failures += 1;
   }
   return failures;
 }
@@ -270,6 +288,16 @@ async function validateImageCredentialFallbackCases(validPages: SuperPage[]): Pr
   }
 }
 
+function validateWorkflowRevalidationSource(): number {
+  const source = readFileSync(join(process.cwd(), "app", "workflow", "actions.ts"), "utf8");
+  const required = ['revalidatePath("/articles")', 'revalidatePath(`/articles/${result.slug}`)', 'revalidatePath(`/workflow/preview/${result.slug}`)'];
+  const missing = required.filter((snippet) => !source.includes(snippet));
+  const passed = missing.length === 0;
+  console.log(`${passed ? "PASS" : "FAIL"} workflow-action:revalidates-persisted-routes expected=pass`);
+  for (const snippet of missing) console.log(`  - missing ${snippet}`);
+  return passed ? 0 : 1;
+}
+
 async function validateWorkflowActionGuardCases(): Promise<number> {
   const originalSecret = process.env.WORKFLOW_ACTION_SECRET;
   const cases: Array<{ id: string; setup: () => void; input: Parameters<typeof generateWorkflowProjectAction>[0]; expectedText: string }> = [
@@ -433,20 +461,22 @@ async function main() {
   const imageNegativeFailures = validateImageNegativeCases(validPages);
   const jsonLdFailures = validateJsonLdCases(validPages);
   const internalLinkFailures = validateInternalLinkCases(validPages);
+  const dynamicRouteNegativeFailures = validateDynamicRouteNegativeCases();
   const runtimeDiscoveryFailures = validateRuntimeDiscoveryModes();
   const renderFailures = validateRenderCases(validPages);
   const providerDiagnosticFailures = await validateProviderDiagnosticCases();
   const imageCredentialFailures = await validateImageCredentialFallbackCases(validPages);
+  const workflowActionRevalidationFailures = validateWorkflowRevalidationSource();
   const workflowActionGuardFailures = await validateWorkflowActionGuardCases();
   const generatedReportFailures = validateGeneratedReports();
   const workflowTopicFailures = await validateWorkflowTopicCases();
   const failed = results.filter((result) => !result.passed);
-  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || internalLinkFailures > 0 || runtimeDiscoveryFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || workflowActionGuardFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
-    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${internalLinkFailures} internal-link case(s), ${runtimeDiscoveryFailures} runtime discovery case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${workflowActionGuardFailures} workflow action guard case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
+  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || internalLinkFailures > 0 || dynamicRouteNegativeFailures > 0 || runtimeDiscoveryFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || workflowActionRevalidationFailures > 0 || workflowActionGuardFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
+    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${internalLinkFailures} internal-link case(s), ${dynamicRouteNegativeFailures} dynamic-route case(s), ${runtimeDiscoveryFailures} runtime discovery case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${workflowActionRevalidationFailures} workflow action revalidation case(s), ${workflowActionGuardFailures} workflow action guard case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
     process.exit(1);
   }
 
-  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, internal-link, runtime discovery, render, provider diagnostic, image credential, workflow action guard, generated-report, workflow-topic, and SEO negative checks.`);
+  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, internal-link, dynamic-route, runtime discovery, render, provider diagnostic, image credential, workflow action revalidation, workflow action guard, generated-report, workflow-topic, and SEO negative checks.`);
 }
 
 main().catch((error) => {

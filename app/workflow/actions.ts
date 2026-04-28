@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { getDefaultArticle } from "@/super-page/data";
 import { generateWorkflowProject, type WorkflowProjectInput, type WorkflowProjectResult } from "@/workflow/generateProject";
 
@@ -37,5 +38,9 @@ export async function generateWorkflowProjectAction(input: WorkflowActionInput):
     imageModelPreference: cleanField(input.imageModelPreference, "imageModelPreference"),
   };
   requirePersistenceAccess(input.accessToken?.trim());
-  return generateWorkflowProject(normalizedInput, getDefaultArticle());
+  const result = await generateWorkflowProject(normalizedInput, getDefaultArticle());
+  revalidatePath("/articles");
+  revalidatePath(`/articles/${result.slug}`);
+  revalidatePath(`/workflow/preview/${result.slug}`);
+  return result;
 }
