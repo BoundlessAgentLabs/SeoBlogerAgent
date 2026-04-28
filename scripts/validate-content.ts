@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { generateWorkflowProjectAction } from "../app/workflow/actions";
 import { SuperPageView } from "../src/components/SuperPageView";
 import { generateLiveImageAttempt } from "../src/images/adapter";
 import { imagePromptRecord } from "../src/images/prompt";
@@ -211,6 +212,35 @@ async function validateImageCredentialFallbackCases(validPages: SuperPage[]): Pr
   }
 }
 
+async function validateWorkflowActionGuardCases(): Promise<number> {
+  const originalSecret = process.env.WORKFLOW_ACTION_SECRET;
+  const cases: Array<{ id: string; setup: () => void; input: Parameters<typeof generateWorkflowProjectAction>[0]; expectedText: string }> = [
+    { id: "disabled", setup: () => { delete process.env.WORKFLOW_ACTION_SECRET; }, input: { topic: "guarded workflow topic" }, expectedText: "Workflow persistence is disabled" },
+    { id: "bad-key", setup: () => { process.env.WORKFLOW_ACTION_SECRET = "secret"; }, input: { topic: "guarded workflow topic", accessToken: "wrong" }, expectedText: "Invalid workflow access key" },
+    { id: "oversized-topic", setup: () => { process.env.WORKFLOW_ACTION_SECRET = "secret"; }, input: { topic: "x".repeat(161), accessToken: "secret" }, expectedText: "topic must be 160 characters or fewer" },
+  ];
+  let failures = 0;
+  try {
+    for (const item of cases) {
+      item.setup();
+      let message = "";
+      try {
+        await generateWorkflowProjectAction(item.input);
+      } catch (error) {
+        message = error instanceof Error ? error.message : String(error);
+      }
+      const passed = message.includes(item.expectedText);
+      console.log(`${passed ? "PASS" : "FAIL"} workflow-action:${item.id} expected=blocked`);
+      if (!passed) console.log(`  - got ${message || "<no error>"}`);
+      if (!passed) failures += 1;
+    }
+  } finally {
+    if (originalSecret === undefined) delete process.env.WORKFLOW_ACTION_SECRET;
+    else process.env.WORKFLOW_ACTION_SECRET = originalSecret;
+  }
+  return failures;
+}
+
 function validateQualityCases(): number {
   const casesPath = join(process.cwd(), "content", "quality-cases", "cases.json");
   const cases = JSON.parse(readFileSync(casesPath, "utf8")) as QualityCase[];
@@ -342,15 +372,16 @@ async function main() {
   const renderFailures = validateRenderCases(validPages);
   const providerDiagnosticFailures = await validateProviderDiagnosticCases();
   const imageCredentialFailures = await validateImageCredentialFallbackCases(validPages);
+  const workflowActionGuardFailures = await validateWorkflowActionGuardCases();
   const generatedReportFailures = validateGeneratedReports();
   const workflowTopicFailures = await validateWorkflowTopicCases();
   const failed = results.filter((result) => !result.passed);
-  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
-    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
+  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || workflowActionGuardFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
+    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${workflowActionGuardFailures} workflow action guard case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
     process.exit(1);
   }
 
-  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, render, provider diagnostic, image credential, generated-report, workflow-topic, and SEO negative checks.`);
+  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, render, provider diagnostic, image credential, workflow action guard, generated-report, workflow-topic, and SEO negative checks.`);
 }
 
 main().catch((error) => {

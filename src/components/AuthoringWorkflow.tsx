@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import type { QualityStatus, SuperPage } from "@/super-page/types";
 import type { WorkflowProjectInput, WorkflowProjectResult } from "@/workflow/generateProject";
 
 type StepState = "idle" | "running" | "done" | "blocked";
 type EventPhase = "structure" | "blocks" | "images" | "system";
 
-type GenerateProjectAction = (input: WorkflowProjectInput) => Promise<WorkflowProjectResult>;
+type WorkflowActionInput = WorkflowProjectInput & { accessToken?: string };
+type GenerateProjectAction = (input: WorkflowActionInput) => Promise<WorkflowProjectResult>;
 
 interface AuditEvent {
   time: string;
@@ -43,6 +44,7 @@ export function AuthoringWorkflow({ page, generateProject }: { page: SuperPage; 
   const [targetLocation, setTargetLocation] = useState("United States");
   const [brandVoice, setBrandVoice] = useState("Helpful expert, low-hype");
   const [imageModelPreference, setImageModelPreference] = useState("GPT Image / CodexImagen2API when live");
+  const [accessToken, setAccessToken] = useState("");
   const [structureState, setStructureState] = useState<StepState>("idle");
   const [blockState, setBlockState] = useState<StepState>("idle");
   const [imageState, setImageState] = useState<StepState>("idle");
@@ -52,9 +54,11 @@ export function AuthoringWorkflow({ page, generateProject }: { page: SuperPage; 
   const [workflowResult, setWorkflowResult] = useState<WorkflowProjectResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [events, setEvents] = useState<AuditEvent[]>([
-    { time: nowStamp(), phase: "system", message: `Loaded deterministic fixture ${fixtureId}.` },
-  ]);
+  const [events, setEvents] = useState<AuditEvent[]>([]);
+
+  useEffect(() => {
+    setEvents([{ time: nowStamp(), phase: "system", message: `Loaded deterministic fixture ${fixtureId}.` }]);
+  }, [fixtureId]);
 
   const imageWarnings = imageSlots.filter((slot) => slot.qa.relevance !== "pass" || slot.qa.textArtifacts !== "pass" || slot.qa.realism !== "pass");
   const failing = qualityGates.filter((gate) => gate.status === "fail");
@@ -90,7 +94,7 @@ export function AuthoringWorkflow({ page, generateProject }: { page: SuperPage; 
     log("structure", `Submitting topic to persisted workflow action: ${topic}`);
     startTransition(async () => {
       try {
-        const result = await generateProject({ topic, customerAction, targetLocation, brandVoice, imageModelPreference });
+        const result = await generateProject({ topic, customerAction, targetLocation, brandVoice, imageModelPreference, accessToken });
         applyWorkflowResult(result);
         setStructureState("done");
         log("structure", `Persisted ${result.article.sections.length} generated sections for ${result.slug}.`);
@@ -170,6 +174,9 @@ export function AuthoringWorkflow({ page, generateProject }: { page: SuperPage; 
               </label>
               <label className="text-sm font-medium text-slate-700" htmlFor="imageModelPreference">Image model preference
                 <input id="imageModelPreference" value={imageModelPreference} onChange={(event) => setImageModelPreference(event.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-ink" />
+              </label>
+              <label className="text-sm font-medium text-slate-700" htmlFor="workflowAccessKey">Workflow access key
+                <input id="workflowAccessKey" value={accessToken} onChange={(event) => setAccessToken(event.target.value)} type="password" autoComplete="off" placeholder="Required for file persistence" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-ink" />
               </label>
             </div>
             <button type="button" onClick={generateStructure} disabled={isPending || topic.trim().length < 3} className="mt-4 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400">Persist generated project</button>

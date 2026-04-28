@@ -88,7 +88,7 @@ This writes a topic-specific project under `content/articles/generated-<topic-sl
 npm run generate:workflow -- --topic "open source SEO content workflow"
 ```
 
-The web UI calls the same persisted workflow path from `app/workflow/actions.ts`.
+The CLI command above is the default local persistence path. The web UI action is gated to prevent public filesystem writes; set `WORKFLOW_ACTION_SECRET` on the server and enter the same access key in `/workflow` before using the UI to persist files.
 
 ### Live text generation
 
