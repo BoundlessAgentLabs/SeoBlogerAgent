@@ -64,10 +64,8 @@ function slugifyTopic(topic: string) {
   const source = topic.trim().toLowerCase();
   const fullSlug = source.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   const hash = topicHash(topic);
-  const containsNonAscii = /[^\u0000-\u007f]/.test(source);
-  if (!fullSlug) return `topic-${hash}`;
-  if (containsNonAscii || fullSlug.length > 44) return `${fullSlug.slice(0, 44).replace(/-+$/g, "")}-${hash}`;
-  return fullSlug;
+  const prefix = (fullSlug || "topic").slice(0, 44).replace(/-+$/g, "") || "topic";
+  return `${prefix}-${hash}`;
 }
 
 function compactText(input: string) {

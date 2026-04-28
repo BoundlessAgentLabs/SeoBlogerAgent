@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getArticleSlugs, getArticleBySlug } from "@/super-page/data";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: "https://example.com", lastModified: new Date("2026-04-28") },

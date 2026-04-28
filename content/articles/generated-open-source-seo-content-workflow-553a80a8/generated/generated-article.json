@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "slug": "generated-open-source-seo-content-workflow",
+  "slug": "generated-open-source-seo-content-workflow-553a80a8",
   "brief": {
     "keyword": "open source SEO content workflow",
     "intent": "mixed",
@@ -11,7 +11,7 @@
   "metadata": {
     "title": "Open Source SEO Content Workflow: Inspectable SEO Super Page Workflow",
     "description": "Generated Super Page workflow for open source SEO content workflow: structure, block rewrites, image prompts, quality checks, and SEO preview.",
-    "canonicalUrl": "https://example.com/articles/generated-open-source-seo-content-workflow",
+    "canonicalUrl": "https://example.com/articles/generated-open-source-seo-content-workflow-553a80a8",
     "updatedAt": "2026-04-28",
     "author": "Boundless Agent Labs",
     "openGraph": {
@@ -403,7 +403,7 @@
     },
     {
       "name": "Open Source SEO Content Workflow: Inspectable SEO Super Page Workflow",
-      "href": "/articles/generated-open-source-seo-content-workflow"
+      "href": "/articles/generated-open-source-seo-content-workflow-553a80a8"
     }
   ],
   "qualityGates": [

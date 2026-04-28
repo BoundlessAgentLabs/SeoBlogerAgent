@@ -1,5 +1,6 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import * as sitemapModule from "../app/sitemap";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { generateWorkflowProjectAction } from "../app/workflow/actions";
@@ -37,6 +38,54 @@ interface GeneratedQualityReport {
 
 function clonePage(page: SuperPage): SuperPage {
   return JSON.parse(JSON.stringify(page)) as SuperPage;
+}
+
+function appRouteExists(href: string): boolean {
+  const normalized = href.split("#")[0].split("?")[0].replace(/^\/+|\/+$/g, "");
+  if (!normalized) return true;
+  const publicPath = join(process.cwd(), "public", normalized);
+  if (existsSync(publicPath) && statSync(publicPath).isFile()) return true;
+
+  let routeDir = join(process.cwd(), "app");
+  for (const segment of normalized.split("/")) {
+    const exact = join(routeDir, segment);
+    if (existsSync(exact) && statSync(exact).isDirectory()) {
+      routeDir = exact;
+      continue;
+    }
+    const dynamic = readdirSync(routeDir, { withFileTypes: true }).find((entry) => entry.isDirectory() && /^\[.+\]$/.test(entry.name));
+    if (!dynamic) return false;
+    routeDir = join(routeDir, dynamic.name);
+  }
+  return existsSync(join(routeDir, "page.tsx")) || existsSync(join(routeDir, "route.ts"));
+}
+
+function validateInternalLinkCases(validPages: SuperPage[]): number {
+  let failures = 0;
+  for (const page of validPages) {
+    for (const link of page.internalLinks) {
+      if (!link.href.startsWith("/")) continue;
+      const passed = appRouteExists(link.href);
+      console.log(`${passed ? "PASS" : "FAIL"} internal-link:${page.slug}:${link.href} expected=pass`);
+      if (!passed) failures += 1;
+    }
+    for (const crumb of page.breadcrumbs) {
+      if (!crumb.href.startsWith("/")) continue;
+      const passed = appRouteExists(crumb.href);
+      console.log(`${passed ? "PASS" : "FAIL"} breadcrumb-link:${page.slug}:${crumb.href} expected=pass`);
+      if (!passed) failures += 1;
+    }
+  }
+  return failures;
+}
+
+function validateSitemapRuntimeMode(): number {
+  const dynamic = (sitemapModule as { dynamic?: string }).dynamic;
+  const revalidate = (sitemapModule as { revalidate?: number }).revalidate;
+  const passed = dynamic === "force-dynamic" && revalidate === 0;
+  console.log(`${passed ? "PASS" : "FAIL"} sitemap:runtime-generated-articles expected=dynamic`);
+  if (!passed) console.log(`  - dynamic=${dynamic ?? "<unset>"} revalidate=${revalidate ?? "<unset>"}`);
+  return passed ? 0 : 1;
 }
 
 function validateSeoNegativeCases(validPages: SuperPage[]): number {
@@ -306,6 +355,10 @@ async function validateWorkflowTopicCases(): Promise<number> {
     { id: "long-tail", topic: "best AI SEO content workflow for multilingual ecommerce category pages with realistic product images and strict quality gates" },
     { id: "zh-keyword", topic: "北京开芯院 SEO 内容工作流" },
     { id: "ja-keyword", topic: "東京のSEO記事生成ワークフロー" },
+    { id: "ascii-slash", topic: "A/B testing SEO" },
+    { id: "ascii-space", topic: "A B testing SEO" },
+    { id: "symbol-plus", topic: "C++" },
+    { id: "symbol-hash", topic: "C#" },
   ];
   const slugs = new Set<string>();
   let failures = 0;
@@ -319,6 +372,7 @@ async function validateWorkflowTopicCases(): Promise<number> {
       if (article.metadata.description.length > 170) errors.push(`metadata.description length ${article.metadata.description.length} exceeds 170`);
       const expectedUpdatedAt = new Date().toISOString().slice(0, 10);
       if (article.metadata.updatedAt !== expectedUpdatedAt) errors.push(`metadata.updatedAt ${article.metadata.updatedAt} must equal generation date ${expectedUpdatedAt}`);
+      if (!/[a-f0-9]{8}$/.test(article.slug)) errors.push(`slug ${article.slug} must end with an 8-character hash disambiguator`);
       if (article.slug.endsWith("untitled-topic")) errors.push("slug collapsed to untitled-topic");
       if (slugs.has(article.slug)) errors.push(`duplicate generated slug ${article.slug}`);
       slugs.add(article.slug);
@@ -369,6 +423,8 @@ async function main() {
   const duplicateIdFailures = validateDuplicateIdCases(validPages);
   const imageNegativeFailures = validateImageNegativeCases(validPages);
   const jsonLdFailures = validateJsonLdCases(validPages);
+  const internalLinkFailures = validateInternalLinkCases(validPages);
+  const sitemapRuntimeFailures = validateSitemapRuntimeMode();
   const renderFailures = validateRenderCases(validPages);
   const providerDiagnosticFailures = await validateProviderDiagnosticCases();
   const imageCredentialFailures = await validateImageCredentialFallbackCases(validPages);
@@ -376,12 +432,12 @@ async function main() {
   const generatedReportFailures = validateGeneratedReports();
   const workflowTopicFailures = await validateWorkflowTopicCases();
   const failed = results.filter((result) => !result.passed);
-  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || workflowActionGuardFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
-    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${workflowActionGuardFailures} workflow action guard case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
+  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || internalLinkFailures > 0 || sitemapRuntimeFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || workflowActionGuardFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
+    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${internalLinkFailures} internal-link case(s), ${sitemapRuntimeFailures} sitemap runtime case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${workflowActionGuardFailures} workflow action guard case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
     process.exit(1);
   }
 
-  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, render, provider diagnostic, image credential, workflow action guard, generated-report, workflow-topic, and SEO negative checks.`);
+  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, internal-link, sitemap runtime, render, provider diagnostic, image credential, workflow action guard, generated-report, workflow-topic, and SEO negative checks.`);
 }
 
 main().catch((error) => {

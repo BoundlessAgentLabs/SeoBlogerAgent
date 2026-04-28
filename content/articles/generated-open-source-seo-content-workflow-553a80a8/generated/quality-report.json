@@ -1,6 +1,6 @@
 {
-  "articleSlug": "generated-open-source-seo-content-workflow",
-  "generatedAt": "2026-04-28T16:19:19.849Z",
+  "articleSlug": "generated-open-source-seo-content-workflow-553a80a8",
+  "generatedAt": "2026-04-28T17:42:07.142Z",
   "mode": "mock",
   "outline": {
     "provider": "openai-compatible",
@@ -80,9 +80,9 @@
     "valid": true,
     "errors": [],
     "warnings": [
-      "/generated-open-source-seo-content-workflow/imageSlots/hero-workflow/qa realism needs generated-image review",
-      "/generated-open-source-seo-content-workflow/imageSlots/section-editor/qa realism needs generated-image review",
-      "/generated-open-source-seo-content-workflow/imageSlots/image-gallery/qa realism needs generated-image review"
+      "/generated-open-source-seo-content-workflow-553a80a8/imageSlots/hero-workflow/qa realism needs generated-image review",
+      "/generated-open-source-seo-content-workflow-553a80a8/imageSlots/section-editor/qa realism needs generated-image review",
+      "/generated-open-source-seo-content-workflow-553a80a8/imageSlots/image-gallery/qa realism needs generated-image review"
     ]
   },
   "sectionLogs": [
