@@ -32,6 +32,27 @@ export function getArticleBySlug(slug: string): SuperPage | undefined {
   return undefined;
 }
 
+export function getGeneratedArticlePreview(slug: string): SuperPage | undefined {
+  for (const directory of getArticleDirectories()) {
+    const generatedPath = join(articlesRoot, directory, "generated", "generated-article.json");
+    try {
+      const raw = JSON.parse(readFileSync(generatedPath, "utf8"));
+      const article = assertSuperPage(raw);
+      if (article.slug === slug || directory === slug) return article;
+    } catch {
+      // Article has no generated preview yet.
+    }
+  }
+  return undefined;
+}
+
+export function getGeneratedPreviewSlugs(): string[] {
+  return getArticleDirectories().flatMap((directory) => {
+    const article = getGeneratedArticlePreview(directory);
+    return article ? [article.slug] : [];
+  });
+}
+
 export function getDefaultArticle(): SuperPage {
   return getArticleByDirectory("demo-super-page");
 }

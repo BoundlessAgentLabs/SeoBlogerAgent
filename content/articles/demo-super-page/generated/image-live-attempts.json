@@ -5,8 +5,8 @@
     "imageSlotId": "hero-workflow",
     "metadata": {
       "imageSlotId": "hero-workflow",
-      "provider": "mock",
-      "status": "mock",
+      "provider": "codex-imagen2api",
+      "status": "generated",
       "prompt": "Subject: Editorial workspace showing structured SEO article planning on a large monitor\nContext: A realistic content strategist desk with notes, page outline cards, and image prompt checklist\nComposition: Wide hero image with the workspace centered and calm negative space for headline overlay\nRealism constraints: natural screen glow; realistic desk materials; no impossible reflections\nAvoid: floating holograms; unreadable text; distorted hands; brand logos\nNo logos, watermarks, or readable fake UI text unless explicitly requested.",
       "alt": "Content strategist planning a structured AI SEO Super Page workflow",
       "caption": "A Super Page pipeline separates planning, rewriting, image generation, and quality review.",

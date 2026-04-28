@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "validate:content": "tsx scripts/validate-content.ts",
-    "generate:mock": "tsx scripts/generate-mock.ts"
+    "generate:mock": "tsx scripts/generate-mock.ts",
+    "generate:image:live": "tsx scripts/generate-live-image.ts",
+    "generate:text:live": "tsx scripts/generate-live-text.ts"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.15",

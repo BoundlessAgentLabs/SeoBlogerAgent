@@ -21,12 +21,13 @@ The current MVP includes a working Next.js App Router foundation:
 - Machine-readable Super Page JSON schema: `content/schemas/super-page.schema.json`
 - Positive sample fixture: `content/articles/demo-super-page/article.json`
 - Negative validation fixtures: `content/articles/negative-*`
-- Content and SEO validator: `scripts/validate-content.ts`
-- Deterministic mock generation pipeline for all sections: `scripts/generate-mock.ts`
-- Provider-neutral mock/live model routing contract: `src/models/gateway.ts`
-- Image prompt, mock adapter, and credential-safe live-attempt contracts: `src/images/`
+- Content, generated-report, image QA, and SEO validator: `scripts/validate-content.ts`
+- Deterministic mock generation pipeline for outline and all generated sections: `scripts/generate-mock.ts`
+- Provider-neutral mock/live model routing with task output validation: `src/models/gateway.ts`
+- Image prompt, mock adapter, live CodexImagen2API/OpenAI-compatible adapter, and raster save path: `src/images/`
 - Executable authoring workflow UI with topic, structure, block, image, and quality states: `app/workflow/page.tsx`
 - Rendered article preview with per-section generation audit panels: `app/articles/[slug]/page.tsx`
+- Persisted generated preview route: `app/workflow/preview/[slug]/page.tsx`
 - Sitemap compatibility: `app/sitemap.ts`
 
 ## Quick Start
@@ -44,6 +45,7 @@ Open locally:
 - Home: `http://localhost:3000`
 - Authoring workflow: `http://localhost:3000/workflow`
 - Sample Super Page: `http://localhost:3000/articles/ai-seo-super-page-generator`
+- Persisted generated preview: `http://localhost:3000/workflow/preview/ai-seo-super-page-generator`
 
 ## Validation Commands
 
@@ -58,6 +60,8 @@ This validates:
 - The positive Super Page fixture passes JSON schema and semantic checks.
 - Negative fixtures fail with actionable error paths.
 - SEO readiness catches duplicate canonicals, missing alt text, failing quality gates, and image QA failures.
+- Image readiness fails missing captions, missing prompt metadata, visible text artifacts, failed relevance, failed realism, and generic stock-photo prompts.
+- Generated quality reports fail unresolved high-severity generated content issues.
 
 ### Mock generation
 
@@ -68,11 +72,32 @@ npm run generate:mock
 This writes deterministic artifacts to:
 
 ```text
+content/articles/demo-super-page/generated/generated-article.json
 content/articles/demo-super-page/generated/generation-log.json
 content/articles/demo-super-page/generated/image-metadata.json
 content/articles/demo-super-page/generated/quality-report.json
 content/articles/demo-super-page/generated/image-live-attempts.json
 ```
+
+### Live text generation
+
+This command intentionally may spend text-model quota. It loads provider settings from your shell and writes a redacted validation record to `content/articles/demo-super-page/generated/text-live-result.json`:
+
+```bash
+npm run generate:text:live -- --section structure-first
+```
+
+### Live image generation
+
+This command intentionally may spend image-generation quota. Start the local CodexImagen2API service first, then run one slot explicitly:
+
+```bash
+CODEX_IMAGEN2_API_BASE_URL=http://127.0.0.1:8000 \
+IMAGE_AI_PROVIDER=codex-imagen2api \
+npm run generate:image:live -- --slot hero-workflow
+```
+
+Successful runs save a raster under `public/generated/<article-slug>/` and write `content/articles/demo-super-page/generated/image-live-result.json`.
 
 ### Build
 
@@ -80,7 +105,7 @@ content/articles/demo-super-page/generated/image-live-attempts.json
 npm run build
 ```
 
-The build statically renders the home page, workflow page, and sample article route.
+The build statically renders the home page, workflow page, sample article route, generated preview route, and sitemap route.
 
 ## Model Routing
 
@@ -93,12 +118,22 @@ AI_PROVIDER
 AI_MODEL
 AI_BASE_URL
 AI_API_KEY
+AI_LIVE
+OPENAI_API_KEY
+OPENAI_BASE_URL
+GEMINI_API_KEY
+GEMINI_BASE_URL
+DEEPSEEK_API_KEY
+DEEPSEEK_BASE_URL
+KIMI_API_KEY
+KIMI_BASE_URL
+MOONSHOT_API_KEY
+MOONSHOT_BASE_URL
 IMAGE_AI_PROVIDER
 IMAGE_AI_MODEL
 IMAGE_AI_BASE_URL
 IMAGE_AI_API_KEY
 CODEX_IMAGEN2_API_BASE_URL
-AI_LIVE
 ```
 
 The owner's machine may reuse private provider settings from:

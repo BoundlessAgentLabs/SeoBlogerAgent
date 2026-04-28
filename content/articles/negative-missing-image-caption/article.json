@@ -1,0 +1,438 @@
+{
+  "schemaVersion": "1.0.0",
+  "slug": "ai-seo-super-page-generator",
+  "brief": {
+    "keyword": "AI SEO super page generator",
+    "intent": "mixed",
+    "audience": "SEO operators, affiliate site builders, and developers evaluating open-source AI writing workflows",
+    "angle": "A transparent Super Page pipeline that separates structure, rewriting, image generation, and quality review instead of hiding everything behind one prompt.",
+    "sourceModel": "mock-codex5.5pro"
+  },
+  "metadata": {
+    "title": "AI SEO Super Page Generator: Open Workflow Blueprint",
+    "description": "A practical blueprint for generating SEO Super Pages with block-based AI writing, realistic image prompts, quality gates, and transparent metadata.",
+    "canonicalUrl": "https://example.com/articles/ai-seo-super-page-generator",
+    "updatedAt": "2026-04-28",
+    "author": "Boundless Agent Labs",
+    "openGraph": {
+      "title": "Open SEO Super Page Generator Blueprint",
+      "description": "See how a structured SEO article pipeline can reduce generic AI tone and improve image quality.",
+      "image": "/mock-images/ai-seo-super-page-hero.svg"
+    }
+  },
+  "hero": {
+    "headline": "Build SEO Super Pages with structure, not one giant prompt",
+    "answer": "A strong AI SEO Super Page starts with a reusable page schema, then generates each section, image, FAQ, and quality check independently. This keeps the output inspectable, easier to improve, and less likely to sound like a generic AI article assembled from repeated filler phrases.",
+    "summaryBullets": [
+      "Plan the page as structured blocks before writing paragraphs.",
+      "Use provider-neutral model routing so content can move across Codex, Gemini, DeepSeek, or Kimi.",
+      "Treat image prompts and image QA as first-class article assets.",
+      "Block publishing until SEO, factuality, tone, and image checks are visible."
+    ],
+    "trustCue": "Research prototype updated on 2026-04-28 with explicit quality gates and mock generation evidence."
+  },
+  "toc": [
+    {
+      "id": "structure-first",
+      "label": "Why structure comes first"
+    },
+    {
+      "id": "block-rewriting",
+      "label": "How block rewriting reduces AI tone"
+    },
+    {
+      "id": "image-quality",
+      "label": "How realistic image prompts improve pages"
+    },
+    {
+      "id": "quality-gates",
+      "label": "What to check before publishing"
+    }
+  ],
+  "sections": [
+    {
+      "id": "structure-first",
+      "heading": "Start with a Super Page schema before writing",
+      "searchIntent": "The reader wants to understand what separates a Super Page from an ordinary long-form blog post.",
+      "summaryClaim": "A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text.",
+      "paragraphs": [
+        "The first useful step is not asking a model to write a complete article. It is defining the page contract: what the hero answer must prove, which sections satisfy search sub-intents, where images are needed, which internal links support topical authority, and what quality gates must pass before publishing.",
+        "This approach gives the team a reusable structure that can be validated before any expensive model call runs. If a generated outline lacks FAQs, image slots, metadata, or internal links, the system can fail early with a precise error instead of letting a weak article reach the editor."
+      ],
+      "examples": [
+        "For a software comparison page, the schema can require a decision table, best-for labels, caveats, and a final recommendation checklist."
+      ],
+      "caveats": [
+        "The schema should guide quality without forcing every keyword into the same rigid layout."
+      ],
+      "imageSlotId": "hero-workflow",
+      "qualityNotes": [
+        "Every section maps to an explicit search sub-intent and quality note."
+      ],
+      "sourceNotes": [
+        {
+          "label": "Google people-first baseline",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.",
+          "sourceType": "research"
+        },
+        {
+          "label": "Product workflow assumption",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.",
+          "sourceType": "assumption"
+        }
+      ],
+      "generationConstraints": {
+        "mustInclude": [
+          "specific example",
+          "practical caveat",
+          "reader benefit"
+        ],
+        "avoidPhrases": [
+          "In today's digital age",
+          "unlock the power",
+          "delve into",
+          "game changer"
+        ],
+        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
+        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
+      }
+    },
+    {
+      "id": "block-rewriting",
+      "heading": "Rewrite each block with context and constraints",
+      "searchIntent": "The reader wants a practical way to make AI content feel less generic.",
+      "summaryClaim": "Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence.",
+      "paragraphs": [
+        "A block-based rewrite pipeline gives each section its own intent, source notes, examples, and anti-AI-tone constraints. The model does not need to invent a full article arc every time; it only needs to improve a focused block while preserving the page plan.",
+        "The reviewer can then reject mechanical openings, unsupported statistics, fake citations, or paragraphs that repeat the same rhythm. This is harder to enforce when the entire article is produced as a single response, because failures are mixed together with otherwise usable sections."
+      ],
+      "examples": [
+        "A section about image quality can require one concrete artifact checklist: distorted hands, unreadable text, plastic textures, impossible reflections, and generic stock-photo framing."
+      ],
+      "caveats": [
+        "Block rewriting still needs source discipline; smaller prompts do not automatically make factual claims reliable."
+      ],
+      "imageSlotId": "section-editor",
+      "qualityNotes": [
+        "Section includes concrete examples and avoids vague SEO filler."
+      ],
+      "sourceNotes": [
+        {
+          "label": "Google people-first baseline",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.",
+          "sourceType": "research"
+        },
+        {
+          "label": "Product workflow assumption",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.",
+          "sourceType": "assumption"
+        }
+      ],
+      "generationConstraints": {
+        "mustInclude": [
+          "specific example",
+          "practical caveat",
+          "reader benefit"
+        ],
+        "avoidPhrases": [
+          "In today's digital age",
+          "unlock the power",
+          "delve into",
+          "game changer"
+        ],
+        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
+        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
+      }
+    },
+    {
+      "id": "image-quality",
+      "heading": "Make image generation part of the article plan",
+      "searchIntent": "The reader wants to know how image prompts can improve SEO content quality and user trust.",
+      "summaryClaim": "Article images should explain the topic or demonstrate a workflow, not merely decorate the page.",
+      "paragraphs": [
+        "Image generation works better when the article schema stores the image purpose, prompt context, realism constraints, avoid-list, alt text, caption, provider, and QA status. The image is no longer a disposable illustration; it becomes a reviewed article asset with provenance.",
+        "For AI SEO pages, the most important prompt details are usually mundane: plausible environment, real tools, natural lighting, readable composition, and explicit avoidance of fake interface text. These constraints reduce the visual AI smell that makes generated blogs feel cheap."
+      ],
+      "examples": [
+        "Instead of asking for 'SEO dashboard image', ask for a realistic editorial photo of an analyst reviewing content briefs, with no readable UI text and no floating holographic icons."
+      ],
+      "caveats": [
+        "Some topics are better served by diagrams or annotated screenshots than photorealistic hero images."
+      ],
+      "imageSlotId": "image-gallery",
+      "qualityNotes": [
+        "Image prompt contains explicit realism constraints and avoid-list."
+      ],
+      "sourceNotes": [
+        {
+          "label": "Google people-first baseline",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.",
+          "sourceType": "research"
+        },
+        {
+          "label": "Product workflow assumption",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.",
+          "sourceType": "assumption"
+        }
+      ],
+      "generationConstraints": {
+        "mustInclude": [
+          "specific example",
+          "practical caveat",
+          "reader benefit"
+        ],
+        "avoidPhrases": [
+          "In today's digital age",
+          "unlock the power",
+          "delve into",
+          "game changer"
+        ],
+        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
+        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
+      }
+    },
+    {
+      "id": "quality-gates",
+      "heading": "Show quality gates before publishing",
+      "searchIntent": "The reader wants assurance that AI output will not be published blindly.",
+      "summaryClaim": "Visible quality gates make the tool more trustworthy for both developers and editors.",
+      "paragraphs": [
+        "A useful open-source SEO writing tool should show what passed, what failed, and what still needs a human decision. The publish state should not hide weak factual support, missing alt text, duplicate canonical URLs, or images marked for regeneration.",
+        "The quality report should live with the article artifact so teams can reproduce why a page was considered ready. This also makes model experiments easier because each provider can be compared against the same acceptance criteria."
+      ],
+      "examples": [
+        "A quality report can mark tone as pass, image relevance as warn, and citation coverage as fail, blocking a publish-ready label until the failure is resolved."
+      ],
+      "caveats": [
+        "Quality gates are guardrails, not a replacement for editorial judgment on high-risk topics."
+      ],
+      "imageSlotId": "quality-report",
+      "qualityNotes": [
+        "Quality states are visible and cannot be collapsed into a false publish-ready state."
+      ],
+      "sourceNotes": [
+        {
+          "label": "Google people-first baseline",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler.",
+          "sourceType": "research"
+        },
+        {
+          "label": "Product workflow assumption",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently.",
+          "sourceType": "assumption"
+        }
+      ],
+      "generationConstraints": {
+        "mustInclude": [
+          "specific example",
+          "practical caveat",
+          "reader benefit"
+        ],
+        "avoidPhrases": [
+          "In today's digital age",
+          "unlock the power",
+          "delve into",
+          "game changer"
+        ],
+        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
+        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
+      }
+    }
+  ],
+  "faq": [
+    {
+      "question": "Why not generate the full SEO article in one prompt?",
+      "answer": "One-shot generation is fast, but it makes structure, factuality, image planning, and tone review harder to inspect. Block generation allows targeted retries and clearer quality gates."
+    },
+    {
+      "question": "Can this pipeline use models other than Gemini?",
+      "answer": "Yes. The intended model gateway is provider-neutral, so content tasks can route to Codex/OpenAI-compatible models, Gemini, DeepSeek, Kimi, or mock adapters."
+    },
+    {
+      "question": "How do images reduce the AI feel of a blog page?",
+      "answer": "Useful images show specific workflows, objects, or diagrams that support the article. Storing prompts, captions, alt text, and QA status helps avoid generic stock-photo visuals."
+    }
+  ],
+  "internalLinks": [
+    {
+      "anchor": "Super Page schema reference",
+      "href": "/docs/super-page-schema",
+      "purpose": "Help developers inspect required article blocks and validation rules."
+    },
+    {
+      "anchor": "Image quality rubric",
+      "href": "/docs/image-quality-rubric",
+      "purpose": "Explain how generated images are reviewed before publishing."
+    }
+  ],
+  "imageSlots": [
+    {
+      "id": "hero-workflow",
+      "kind": "hero",
+      "purpose": "Explain the end-to-end Super Page generation workflow visually.",
+      "prompt": {
+        "subject": "Editorial workspace showing structured SEO article planning on a large monitor",
+        "context": "A realistic content strategist desk with notes, page outline cards, and image prompt checklist",
+        "composition": "Wide hero image with the workspace centered and calm negative space for headline overlay",
+        "realismConstraints": [
+          "natural screen glow",
+          "realistic desk materials",
+          "no impossible reflections"
+        ],
+        "avoid": [
+          "floating holograms",
+          "unreadable text",
+          "distorted hands",
+          "brand logos"
+        ]
+      },
+      "alt": "Content strategist planning a structured AI SEO Super Page workflow",
+      "provider": "mock",
+      "status": "mock",
+      "assetPath": "/mock-images/ai-seo-super-page-hero.svg",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "warn",
+        "notes": "Mock vector placeholder is acceptable for deterministic validation but should be replaced by a generated image later."
+      }
+    },
+    {
+      "id": "section-editor",
+      "kind": "section",
+      "purpose": "Show section-by-section rewriting with visible intent and caveat fields.",
+      "prompt": {
+        "subject": "A focused editor reviewing paragraph blocks and quality notes",
+        "context": "Realistic laptop and printed editorial checklist in a quiet office",
+        "composition": "Over-the-shoulder view with no readable proprietary interface text",
+        "realismConstraints": [
+          "natural posture",
+          "legible but abstract UI blocks",
+          "editorial documentary lighting"
+        ],
+        "avoid": [
+          "fake brand UI",
+          "extra fingers",
+          "glossy stock-photo look"
+        ]
+      },
+      "alt": "Editor reviewing AI rewritten SEO article sections with quality notes",
+      "caption": "Block-level rewriting makes examples, caveats, and tone checks easier to review.",
+      "provider": "mock",
+      "status": "mock",
+      "assetPath": "/mock-images/section-editor.svg",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "warn",
+        "notes": "Prompt metadata is complete; mock asset keeps test runs deterministic."
+      }
+    },
+    {
+      "id": "image-gallery",
+      "kind": "section",
+      "purpose": "Demonstrate image prompt variants and regeneration status.",
+      "prompt": {
+        "subject": "Article image gallery with prompt version cards and QA badges",
+        "context": "Clean web application interface represented as abstract blocks without readable text",
+        "composition": "Three image cards in a grid with subtle quality badges and prompt metadata",
+        "realismConstraints": [
+          "consistent lighting",
+          "no fake text",
+          "credible web app layout"
+        ],
+        "avoid": [
+          "watermarks",
+          "garbled labels",
+          "overly futuristic dashboard"
+        ]
+      },
+      "alt": "Image generation gallery showing prompt versions and quality review badges",
+      "caption": "Image prompts and QA status are stored with the article instead of being discarded.",
+      "provider": "mock",
+      "status": "mock",
+      "assetPath": "/mock-images/image-gallery.svg",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "warn",
+        "notes": "Mock card layout documents the intended image review workflow."
+      }
+    },
+    {
+      "id": "quality-report",
+      "kind": "diagram",
+      "purpose": "Visualize publish readiness checks before an article goes live.",
+      "prompt": {
+        "subject": "Quality report checklist for SEO article readiness",
+        "context": "Minimal editorial dashboard with pass, warning, and fail states represented by shapes",
+        "composition": "Vertical checklist diagram with clear hierarchy and no tiny text",
+        "realismConstraints": [
+          "clean diagram layout",
+          "accessible contrast",
+          "no pseudo-readable paragraphs"
+        ],
+        "avoid": [
+          "busy dashboard",
+          "tiny illegible text",
+          "brand logos"
+        ]
+      },
+      "alt": "Quality report diagram showing SEO content checks before publishing",
+      "caption": "Quality gates should make failures visible before a page is marked publish-ready.",
+      "provider": "mock",
+      "status": "mock",
+      "assetPath": "/mock-images/quality-report.svg",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "pass",
+        "notes": "Diagram-style placeholder is appropriate for quality gate explanation."
+      }
+    }
+  ],
+  "breadcrumbs": [
+    {
+      "name": "Home",
+      "href": "/"
+    },
+    {
+      "name": "Articles",
+      "href": "/articles"
+    },
+    {
+      "name": "AI SEO Super Page Generator",
+      "href": "/articles/ai-seo-super-page-generator"
+    }
+  ],
+  "qualityGates": [
+    {
+      "id": "structure-complete",
+      "label": "Required Super Page blocks are present",
+      "status": "pass",
+      "severity": "high",
+      "evidence": "Hero, sections, FAQ, internal links, image slots, metadata, breadcrumbs, and quality gates are populated."
+    },
+    {
+      "id": "anti-ai-tone",
+      "label": "Generic AI tone check",
+      "status": "pass",
+      "severity": "medium",
+      "evidence": "Sections include concrete examples, caveats, and avoid repeated generic introductions."
+    },
+    {
+      "id": "image-readiness",
+      "label": "Image prompt and metadata readiness",
+      "status": "warn",
+      "severity": "medium",
+      "evidence": "Prompt metadata is complete, but assets are deterministic mock placeholders."
+    },
+    {
+      "id": "seo-metadata",
+      "label": "SEO metadata completeness",
+      "status": "pass",
+      "severity": "high",
+      "evidence": "Title, description, canonical, Open Graph, breadcrumbs, and image alt text are present."
+    }
+  ]
+}

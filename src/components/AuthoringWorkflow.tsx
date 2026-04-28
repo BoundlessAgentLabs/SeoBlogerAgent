@@ -131,6 +131,7 @@ export function AuthoringWorkflow({ page }: { page: SuperPage }) {
           <p className="audit-mono text-blue-200">Open SEO writing workflow</p>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight">Generate inspectable Super Pages</h1>
           <p className="mt-4 max-w-3xl text-slate-200">Edit a topic, generate structure, generate blocks, prepare image prompts, and audit quality state without proprietary competitor assets.</p>
+          <a href={`/workflow/preview/${page.slug}`} className="mt-5 inline-flex rounded-lg border border-slate-500 px-4 py-2 text-sm font-semibold text-white hover:border-white">Open persisted generated preview</a>
           <div className="mt-6 grid gap-2 sm:grid-cols-4">
             {pipeline.map((step, index) => (
               <div key={step.label} className={`border-l-4 p-3 ${stateClass(step.state)}`}>

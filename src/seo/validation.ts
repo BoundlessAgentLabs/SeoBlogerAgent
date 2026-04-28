@@ -1,4 +1,5 @@
 import type { SuperPage } from "@/super-page/types";
+import { validateImageReadiness } from "@/images/validation";
 
 export interface SeoValidationResult {
   valid: boolean;
@@ -23,17 +24,9 @@ export function validateSeoReadiness(pages: SuperPage[]): SeoValidationResult {
     if (page.breadcrumbs.length < 2) {
       errors.push(`/${page.slug}/breadcrumbs must include at least home and current page`);
     }
-    for (const image of page.imageSlots) {
-      if (image.alt.trim().length < 18) {
-        errors.push(`/${page.slug}/imageSlots/${image.id}/alt is missing descriptive alt text`);
-      }
-      if (image.qa.relevance === "fail") {
-        errors.push(`/${page.slug}/imageSlots/${image.id}/qa relevance failed`);
-      }
-      if (image.qa.realism === "warn") {
-        warnings.push(`/${page.slug}/imageSlots/${image.id}/qa realism needs future generated-image review`);
-      }
-    }
+    const imageReadiness = validateImageReadiness(page);
+    errors.push(...imageReadiness.errors);
+    warnings.push(...imageReadiness.warnings);
     for (const gate of page.qualityGates) {
       if (gate.status === "fail") {
         errors.push(`/${page.slug}/qualityGates/${gate.id} is failing: ${gate.evidence}`);
