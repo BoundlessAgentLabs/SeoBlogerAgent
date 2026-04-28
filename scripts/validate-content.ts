@@ -3,6 +3,8 @@ import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { SuperPageView } from "../src/components/SuperPageView";
+import { generateLiveImageAttempt } from "../src/images/adapter";
+import { imagePromptRecord } from "../src/images/prompt";
 import { generateWithModel } from "../src/models/gateway";
 import { reviewTextQuality } from "../src/quality/content";
 import { validateSuperPage, assertSuperPage } from "../src/super-page/validation";
@@ -184,6 +186,31 @@ async function validateProviderDiagnosticCases(): Promise<number> {
   return failures;
 }
 
+async function validateImageCredentialFallbackCases(validPages: SuperPage[]): Promise<number> {
+  if (validPages.length === 0) return 1;
+  const originalFetch = globalThis.fetch;
+  let observedAuthorization = "";
+  let fetched = false;
+  try {
+    globalThis.fetch = (async (_input, init) => {
+      fetched = true;
+      observedAuthorization = ((init?.headers ?? {}) as Record<string, string>).Authorization ?? "";
+      return new Response(JSON.stringify({ error: { message: "forced validation response" } }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }) as typeof fetch;
+    const record = imagePromptRecord(validPages[0].imageSlots[0]);
+    const result = await generateLiveImageAttempt(
+      { articleSlug: validPages[0].slug, prompt: record, mode: "live" },
+      { IMAGE_AI_PROVIDER: "openai-compatible", IMAGE_AI_BASE_URL: "https://image-provider.test/v1", IMAGE_AI_API_KEY: "", OPENAI_API_KEY: "alias-key" } as unknown as NodeJS.ProcessEnv,
+    );
+    const passed = fetched && observedAuthorization === "Bearer alias-key" && result.mode === "blocked" && result.blocker?.includes("HTTP 400");
+    console.log(`${passed ? "PASS" : "FAIL"} image-credentials:blank-primary-falls-back expected=pass`);
+    if (!passed) console.log(`  - fetched=${fetched} authorization=${observedAuthorization || "<missing>"} blocker=${result.blocker ?? "<none>"}`);
+    return passed ? 0 : 1;
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+}
+
 function validateQualityCases(): number {
   const casesPath = join(process.cwd(), "content", "quality-cases", "cases.json");
   const cases = JSON.parse(readFileSync(casesPath, "utf8")) as QualityCase[];
@@ -260,6 +287,8 @@ async function validateWorkflowTopicCases(): Promise<number> {
       if (!schema.valid) errors.push(...schema.errors);
       if (article.metadata.title.length > 70) errors.push(`metadata.title length ${article.metadata.title.length} exceeds 70`);
       if (article.metadata.description.length > 170) errors.push(`metadata.description length ${article.metadata.description.length} exceeds 170`);
+      const expectedUpdatedAt = new Date().toISOString().slice(0, 10);
+      if (article.metadata.updatedAt !== expectedUpdatedAt) errors.push(`metadata.updatedAt ${article.metadata.updatedAt} must equal generation date ${expectedUpdatedAt}`);
       if (article.slug.endsWith("untitled-topic")) errors.push("slug collapsed to untitled-topic");
       if (slugs.has(article.slug)) errors.push(`duplicate generated slug ${article.slug}`);
       slugs.add(article.slug);
@@ -312,15 +341,16 @@ async function main() {
   const jsonLdFailures = validateJsonLdCases(validPages);
   const renderFailures = validateRenderCases(validPages);
   const providerDiagnosticFailures = await validateProviderDiagnosticCases();
+  const imageCredentialFailures = await validateImageCredentialFallbackCases(validPages);
   const generatedReportFailures = validateGeneratedReports();
   const workflowTopicFailures = await validateWorkflowTopicCases();
   const failed = results.filter((result) => !result.passed);
-  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
-    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
+  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
+    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
     process.exit(1);
   }
 
-  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, render, provider diagnostic, generated-report, workflow-topic, and SEO negative checks.`);
+  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, render, provider diagnostic, image credential, generated-report, workflow-topic, and SEO negative checks.`);
 }
 
 main().catch((error) => {

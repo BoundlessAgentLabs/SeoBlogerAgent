@@ -113,6 +113,10 @@ function workflowInstructionSummary(input: WorkflowProjectInput) {
   ].join("; ");
 }
 
+function generatedDate() {
+  return isoNow().slice(0, 10);
+}
+
 function topicArticleFromTemplate(template: SuperPage, input: WorkflowProjectInput): SuperPage {
   const topicText = input.topic.trim() || template.brief.keyword;
   const instructionSummary = workflowInstructionSummary(input);
@@ -126,6 +130,7 @@ function topicArticleFromTemplate(template: SuperPage, input: WorkflowProjectInp
   article.metadata.title = workflowMetadataTitle(topicTitle);
   article.metadata.description = workflowMetadataDescription(topicText);
   article.metadata.canonicalUrl = canonicalUrl;
+  article.metadata.updatedAt = generatedDate();
   article.metadata.openGraph.title = article.metadata.title;
   article.metadata.openGraph.description = article.metadata.description;
   article.breadcrumbs = [

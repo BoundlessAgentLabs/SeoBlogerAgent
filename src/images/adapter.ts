@@ -28,8 +28,12 @@ interface ExtractedImage {
   source: "b64_json" | "data-url" | "url";
 }
 
+function firstPresent(...values: Array<string | undefined>): string | undefined {
+  return values.find((value) => value !== undefined && value.trim().length > 0);
+}
+
 function providerFromEnv(env: NodeJS.ProcessEnv = process.env): ImageProvider {
-  const provider = env.IMAGE_AI_PROVIDER ?? "codex-imagen2api";
+  const provider = firstPresent(env.IMAGE_AI_PROVIDER) ?? "codex-imagen2api";
   if (provider === "openai-compatible" || provider === "codex-imagen2api") return provider;
   return "mock";
 }
@@ -164,7 +168,7 @@ export async function generateLiveImageAttempt(request: ImageGenerationRequest, 
   if (provider === "mock") return generateMockImage(request);
 
   if (provider === "codex-imagen2api") {
-    const baseUrl = env.CODEX_IMAGEN2_API_BASE_URL ?? env.IMAGE_AI_BASE_URL;
+    const baseUrl = firstPresent(env.CODEX_IMAGEN2_API_BASE_URL, env.IMAGE_AI_BASE_URL);
     const url = `${baseUrl ?? ""}/v1/chat/completions`;
     const body = { model: env.IMAGE_AI_MODEL ?? "gpt-4o-image", stream: false, messages: [{ role: "user", content: promptText }] };
     const providerRequest = redactedRequest(url, body);
@@ -181,8 +185,8 @@ export async function generateLiveImageAttempt(request: ImageGenerationRequest, 
     }
   }
 
-  const baseUrl = env.IMAGE_AI_BASE_URL;
-  const apiKey = env.IMAGE_AI_API_KEY ?? env.OPENAI_API_KEY;
+  const baseUrl = firstPresent(env.IMAGE_AI_BASE_URL);
+  const apiKey = firstPresent(env.IMAGE_AI_API_KEY, env.OPENAI_API_KEY);
   const url = `${baseUrl ?? ""}/images/generations`;
   const body = { model: env.IMAGE_AI_MODEL ?? "gpt-image-2", prompt: promptText, size: "1024x1024", quality: "high", output_format: "png" };
   const providerRequest = redactedRequest(url, body);
