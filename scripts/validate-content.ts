@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { reviewTextQuality } from "../src/quality/content";
 import { validateSuperPage, assertSuperPage } from "../src/super-page/validation";
+import { articleJsonLd, serializeJsonLd } from "../src/seo/jsonLd";
 import { validateSeoReadiness } from "../src/seo/validation";
 import { validateImageReadiness } from "../src/images/validation";
 import { getDefaultArticle } from "../src/super-page/data";
@@ -70,6 +71,24 @@ function validateImageNegativeCases(validPages: SuperPage[]): number {
     if (!passed) failures += 1;
   }
   return failures;
+}
+
+function validateJsonLdCases(validPages: SuperPage[]): number {
+  if (validPages.length === 0) return 1;
+  const page = clonePage(validPages[0]);
+  page.metadata.title = `Safe title </script><script>alert("xss")</script>`;
+  const serialized = serializeJsonLd(articleJsonLd(page));
+  const escapedScriptPassed = !serialized.toLowerCase().includes("</script") && serialized.includes("\\u003c/script");
+  console.log(`${escapedScriptPassed ? "PASS" : "FAIL"} jsonld:escaped-script-close expected=pass`);
+  if (!escapedScriptPassed) console.log("  - JSON-LD serialization contains a raw script close sequence");
+
+  const jsonLd = articleJsonLd(validPages[0]);
+  const images = Array.isArray(jsonLd.image) ? jsonLd.image : [];
+  const absoluteImagesPassed = images.length > 0 && images.every((image) => /^https?:\/\//.test(image));
+  console.log(`${absoluteImagesPassed ? "PASS" : "FAIL"} jsonld:absolute-image-urls expected=pass`);
+  for (const image of images) console.log(`  - ${image}`);
+
+  return (escapedScriptPassed ? 0 : 1) + (absoluteImagesPassed ? 0 : 1);
 }
 
 function validateQualityCases(): number {
@@ -189,15 +208,16 @@ async function main() {
   const qualityFailures = validateQualityCases();
   const seoNegativeFailures = validateSeoNegativeCases(validPages);
   const imageNegativeFailures = validateImageNegativeCases(validPages);
+  const jsonLdFailures = validateJsonLdCases(validPages);
   const generatedReportFailures = validateGeneratedReports();
   const workflowTopicFailures = await validateWorkflowTopicCases();
   const failed = results.filter((result) => !result.passed);
-  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || imageNegativeFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
-    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${imageNegativeFailures} image negative case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
+  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
+    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
     process.exit(1);
   }
 
-  console.log(`Content validation passed for ${results.length} schema case(s), including quality, image, generated-report, workflow-topic, and SEO negative checks.`);
+  console.log(`Content validation passed for ${results.length} schema case(s), including quality, image, JSON-LD, generated-report, workflow-topic, and SEO negative checks.`);
 }
 
 main().catch((error) => {

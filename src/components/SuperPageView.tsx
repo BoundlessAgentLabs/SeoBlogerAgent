@@ -1,5 +1,5 @@
 import type { QualityStatus, SuperPage } from "@/super-page/types";
-import { articleJsonLd, breadcrumbJsonLd } from "@/seo/jsonLd";
+import { articleJsonLd, breadcrumbJsonLd, serializeJsonLd } from "@/seo/jsonLd";
 
 function statusClass(status: QualityStatus) {
   if (status === "pass") return "border-emerald-500 text-emerald-800";
@@ -12,8 +12,8 @@ export function SuperPageView({ page }: { page: SuperPage }) {
 
   return (
     <main id="main" className="min-h-screen bg-paper">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd(page)) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd(page)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd(page)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd(page)) }} />
 
       <section className="border-b border-slate-200 bg-white">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-16">
