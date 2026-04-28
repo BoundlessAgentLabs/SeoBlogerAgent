@@ -15,7 +15,7 @@ import { articleJsonLd, breadcrumbJsonLd, serializeJsonLd } from "../src/seo/jso
 import { validateSeoReadiness } from "../src/seo/validation";
 import { validateImageReadiness } from "../src/images/validation";
 import { getArticleBySlug, getDefaultArticle, getGeneratedArticlePreview } from "../src/super-page/data";
-import { buildGeneratedProject } from "../src/workflow/generateProject";
+import { buildGeneratedProject, workflowQualitySummary } from "../src/workflow/generateProject";
 import type { SuperPage } from "../src/super-page/types";
 
 interface QualityCase {
@@ -387,6 +387,40 @@ function validateGeneratedReports(): number {
   return (errors.length === 0 ? 0 : 1) + (negativePassed ? 0 : 1) + (mockNoLivePassed ? 0 : 1);
 }
 
+async function validateGeneratedImageCopyCases(): Promise<number> {
+  const topic = "C++";
+  const { article } = await buildGeneratedProject(getDefaultArticle(), topic);
+  let failures = 0;
+  for (const slot of article.imageSlots) {
+    const fields = [slot.purpose, slot.alt, slot.caption, slot.prompt.subject, slot.prompt.context, slot.prompt.composition];
+    const allFieldsMentionTopic = fields.every((field) => field.includes(topic));
+    const staleTemplateCopyAbsent = fields.every((field) => !field.includes("AI SEO"));
+    const passed = allFieldsMentionTopic && staleTemplateCopyAbsent;
+    console.log(`${passed ? "PASS" : "FAIL"} workflow-image-copy:${slot.id} expected=topic-specific`);
+    if (!allFieldsMentionTopic) console.log(`  - at least one image field omitted topic ${topic}`);
+    if (!staleTemplateCopyAbsent) console.log("  - image field retained stale AI SEO template copy");
+    if (!passed) failures += 1;
+  }
+  return failures;
+}
+
+function validateWorkflowWarningSummaryCases(validPages: SuperPage[]): number {
+  if (validPages.length === 0) return 1;
+  const page = clonePage(validPages[0]);
+  for (const slot of page.imageSlots) {
+    slot.qa.relevance = "pass";
+    slot.qa.textArtifacts = "pass";
+    slot.qa.realism = "pass";
+  }
+  const seo = validateSeoReadiness([page]);
+  const warningGates = page.qualityGates.filter((gate) => gate.status === "warn").length;
+  const summary = workflowQualitySummary(page);
+  const passed = seo.warnings.length === 0 && warningGates > 0 && summary.warnings === warningGates;
+  console.log(`${passed ? "PASS" : "FAIL"} workflow-quality:warnings-single-source expected=pass`);
+  if (!passed) console.log(`  - seoWarnings=${seo.warnings.length} warningGates=${warningGates} summaryWarnings=${summary.warnings}`);
+  return passed ? 0 : 1;
+}
+
 async function validateWorkflowTopicCases(): Promise<number> {
   const cases = [
     { id: "long-tail", topic: "best AI SEO content workflow for multilingual ecommerce category pages with realistic product images and strict quality gates" },
@@ -467,16 +501,18 @@ async function main() {
   const providerDiagnosticFailures = await validateProviderDiagnosticCases();
   const imageCredentialFailures = await validateImageCredentialFallbackCases(validPages);
   const workflowActionRevalidationFailures = validateWorkflowRevalidationSource();
+  const workflowWarningSummaryFailures = validateWorkflowWarningSummaryCases(validPages);
   const workflowActionGuardFailures = await validateWorkflowActionGuardCases();
   const generatedReportFailures = validateGeneratedReports();
+  const workflowImageCopyFailures = await validateGeneratedImageCopyCases();
   const workflowTopicFailures = await validateWorkflowTopicCases();
   const failed = results.filter((result) => !result.passed);
-  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || internalLinkFailures > 0 || dynamicRouteNegativeFailures > 0 || runtimeDiscoveryFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || workflowActionRevalidationFailures > 0 || workflowActionGuardFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
-    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${internalLinkFailures} internal-link case(s), ${dynamicRouteNegativeFailures} dynamic-route case(s), ${runtimeDiscoveryFailures} runtime discovery case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${workflowActionRevalidationFailures} workflow action revalidation case(s), ${workflowActionGuardFailures} workflow action guard case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
+  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || internalLinkFailures > 0 || dynamicRouteNegativeFailures > 0 || runtimeDiscoveryFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || workflowActionRevalidationFailures > 0 || workflowWarningSummaryFailures > 0 || workflowActionGuardFailures > 0 || generatedReportFailures > 0 || workflowImageCopyFailures > 0 || workflowTopicFailures > 0) {
+    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${internalLinkFailures} internal-link case(s), ${dynamicRouteNegativeFailures} dynamic-route case(s), ${runtimeDiscoveryFailures} runtime discovery case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${workflowActionRevalidationFailures} workflow action revalidation case(s), ${workflowWarningSummaryFailures} workflow warning summary case(s), ${workflowActionGuardFailures} workflow action guard case(s), ${generatedReportFailures} generated-report case(s), ${workflowImageCopyFailures} workflow image-copy case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
     process.exit(1);
   }
 
-  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, internal-link, dynamic-route, runtime discovery, render, provider diagnostic, image credential, workflow action revalidation, workflow action guard, generated-report, workflow-topic, and SEO negative checks.`);
+  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, internal-link, dynamic-route, runtime discovery, render, provider diagnostic, image credential, workflow action revalidation, workflow warning summary, workflow action guard, generated-report, workflow image-copy, workflow-topic, and SEO negative checks.`);
 }
 
 main().catch((error) => {

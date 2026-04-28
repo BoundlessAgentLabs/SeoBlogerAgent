@@ -86,6 +86,53 @@ function workflowMetadataDescription(topicText: string) {
   return limitText(`Generated Super Page workflow for ${topicText}: structure, block rewrites, image prompts, quality checks, and SEO preview.`, 170);
 }
 
+function topicImageCopy(slot: SuperPage["imageSlots"][number], topicTitle: string, topicText: string, instructionSummary: string) {
+  const sharedContext = `Topic: ${topicText}. ${instructionSummary}.`;
+  const copyBySlot: Record<string, { purpose: string; subject: string; context: string; composition: string; alt: string; caption: string }> = {
+    "hero-workflow": {
+      purpose: `Explain the end-to-end ${topicTitle} Super Page generation workflow visually.`,
+      subject: `Editorial workspace planning a ${topicTitle} Super Page`,
+      context: `A realistic content strategist desk with notes, outline cards, image prompt checklist, and workflow materials for ${topicText}. ${sharedContext}`,
+      composition: `Wide hero image centered on a ${topicTitle} planning workspace, with calm negative space for headline overlay.`,
+      alt: `Content strategist planning a structured ${topicTitle} Super Page workflow`,
+      caption: `A ${topicTitle} Super Page pipeline separates planning, rewriting, image generation, and quality review.`,
+    },
+    "section-editor": {
+      purpose: `Show section-by-section rewriting for ${topicTitle} with visible intent and caveat fields.`,
+      subject: `Editor reviewing ${topicTitle} section blocks and quality notes`,
+      context: `Realistic laptop and printed editorial checklist for a ${topicText} article in a quiet office. ${sharedContext}`,
+      composition: `Over-the-shoulder view of ${topicTitle} paragraph blocks with no readable proprietary interface text.`,
+      alt: `Editor reviewing ${topicTitle} article sections with quality notes`,
+      caption: `${topicTitle} block-level rewriting keeps examples, caveats, and tone checks reviewable.`,
+    },
+    "image-gallery": {
+      purpose: `Demonstrate ${topicTitle} image prompt variants and regeneration status.`,
+      subject: `${topicTitle} article image gallery with prompt version cards and QA badges`,
+      context: `Clean web application interface for ${topicText} represented as abstract blocks without readable text. ${sharedContext}`,
+      composition: `Three ${topicTitle} image cards in a grid with subtle quality badges and prompt metadata.`,
+      alt: `${topicTitle} image generation gallery showing prompt versions and quality review badges`,
+      caption: `${topicTitle} image prompts and QA status are stored with the article instead of being discarded.`,
+    },
+    "quality-report": {
+      purpose: `Visualize ${topicTitle} publish readiness checks before the article goes live.`,
+      subject: `${topicTitle} quality report checklist for article readiness`,
+      context: `Minimal editorial dashboard for ${topicText} with pass, warning, and fail states represented by shapes. ${sharedContext}`,
+      composition: `Vertical ${topicTitle} checklist diagram with clear hierarchy and no tiny text.`,
+      alt: `${topicTitle} quality report diagram showing content checks before publishing`,
+      caption: `${topicTitle} quality gates keep failures visible before publish-ready status.`,
+    },
+  };
+  const fallback = copyBySlot[slot.id] ?? {
+    purpose: `Support the ${topicTitle} Super Page with topic-specific article imagery.`,
+    subject: `${topicTitle} editorial workflow image`,
+    context: `Topic-specific generated image prompt for ${topicText}. ${sharedContext}`,
+    composition: `${topicTitle} article-support image with realistic editorial composition and no brand logos.`,
+    alt: `${topicTitle} article support image for the generated Super Page`,
+    caption: `${topicTitle} imagery is generated from stored prompt metadata and review state.`,
+  };
+  return fallback;
+}
+
 function isoNow() {
   return new Date().toISOString();
 }
@@ -154,20 +201,28 @@ function topicArticleFromTemplate(template: SuperPage, input: WorkflowProjectInp
     qualityNotes: [`Waiting for persisted generation for ${topicText}.`],
   }));
   article.toc = article.sections.map((section) => ({ id: section.id, label: section.heading }));
-  article.imageSlots = article.imageSlots.map((slot) => ({
-    ...slot,
-    provider: "mock",
-    status: "mock",
-    assetPath: `/mock-images/${slot.id}.svg`,
-    prompt: {
-      ...slot.prompt,
-      context: `${slot.prompt.context}. Topic: ${topicText}. ${instructionSummary}.`,
-    },
-    qa: {
-      ...slot.qa,
-      notes: `Persisted mock image prompt prepared for ${topicText}; live generation can replace this asset explicitly.`,
-    },
-  }));
+  article.imageSlots = article.imageSlots.map((slot) => {
+    const imageCopy = topicImageCopy(slot, topicTitle, topicText, instructionSummary);
+    return {
+      ...slot,
+      purpose: imageCopy.purpose,
+      alt: imageCopy.alt,
+      caption: imageCopy.caption,
+      provider: "mock",
+      status: "mock",
+      assetPath: `/mock-images/${slot.id}.svg`,
+      prompt: {
+        ...slot.prompt,
+        subject: imageCopy.subject,
+        context: imageCopy.context,
+        composition: imageCopy.composition,
+      },
+      qa: {
+        ...slot.qa,
+        notes: `Persisted mock image prompt prepared for ${topicText}; live generation can replace this asset explicitly.`,
+      },
+    };
+  });
   return article;
 }
 
@@ -243,6 +298,20 @@ export async function buildGeneratedProject(template: SuperPage, workflowInput: 
   return { article, outline, sectionLogs, imageMetadata, qualityReport, events };
 }
 
+export function workflowQualitySummary(article: SuperPage): WorkflowProjectResult["quality"] {
+  const seo = validateSeoReadiness([article]);
+  const contentIssues = reviewPageContentQuality(article);
+  const failingGates = article.qualityGates.filter((gate) => gate.status === "fail").length;
+  const warningGates = article.qualityGates.filter((gate) => gate.status === "warn").length;
+  return {
+    valid: seo.valid && contentIssues.length === 0 && failingGates === 0,
+    failingGates,
+    warnings: seo.warnings.length + warningGates,
+    seoErrors: seo.errors,
+    contentIssues: contentIssues.length,
+  };
+}
+
 export async function generateWorkflowProject(workflowInput: string | WorkflowProjectInput, template: SuperPage): Promise<WorkflowProjectResult> {
   const { article, outline, sectionLogs, imageMetadata, qualityReport, events } = await buildGeneratedProject(template, workflowInput);
   const directory = article.slug;
@@ -254,9 +323,6 @@ export async function generateWorkflowProject(workflowInput: string | WorkflowPr
   writeFileSync(join(generatedDir, "generation-log.json"), `${JSON.stringify({ outline, sections: sectionLogs }, null, 2)}\n`);
   writeFileSync(join(generatedDir, "image-metadata.json"), `${JSON.stringify(imageMetadata, null, 2)}\n`);
   writeFileSync(join(generatedDir, "quality-report.json"), `${JSON.stringify(qualityReport, null, 2)}\n`);
-  const seo = validateSeoReadiness([article]);
-  const contentIssues = reviewPageContentQuality(article);
-  const imageWarnings = article.imageSlots.filter((slot) => slot.qa.relevance !== "pass" || slot.qa.textArtifacts !== "pass" || slot.qa.realism !== "pass").length;
   return {
     slug: article.slug,
     directory,
@@ -265,12 +331,6 @@ export async function generateWorkflowProject(workflowInput: string | WorkflowPr
     generatedAt: isoNow(),
     article,
     events: [event("system", `Persisted project at content/articles/${directory}.`), ...events],
-    quality: {
-      valid: seo.valid && contentIssues.length === 0 && article.qualityGates.every((gate) => gate.status !== "fail"),
-      failingGates: article.qualityGates.filter((gate) => gate.status === "fail").length,
-      warnings: seo.warnings.length + imageWarnings,
-      seoErrors: seo.errors,
-      contentIssues: contentIssues.length,
-    },
+    quality: workflowQualitySummary(article),
   };
 }
