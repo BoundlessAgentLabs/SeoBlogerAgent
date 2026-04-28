@@ -39,3 +39,6 @@ tmp/
 # editor
 .vscode/
 .idea/
+
+# Humanize local runtime state
+.humanize/
