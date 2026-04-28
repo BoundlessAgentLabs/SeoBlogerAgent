@@ -1,0 +1,86 @@
+[
+  {
+    "provider": "mock",
+    "mode": "mock",
+    "imageSlotId": "hero-workflow",
+    "assetPath": "/mock-images/hero-workflow.svg",
+    "metadata": {
+      "imageSlotId": "hero-workflow",
+      "provider": "mock",
+      "status": "mock",
+      "prompt": "Subject: Editorial workspace showing structured SEO article planning on a large monitor\nContext: A realistic content strategist desk with notes, page outline cards, and image prompt checklist. Topic: open source SEO content workflow.\nComposition: Wide hero image with the workspace centered and calm negative space for headline overlay\nRealism constraints: natural screen glow; realistic desk materials; no impossible reflections\nAvoid: floating holograms; unreadable text; distorted hands; brand logos\nNo logos, watermarks, or readable fake UI text unless explicitly requested.",
+      "alt": "Content strategist planning a structured AI SEO Super Page workflow",
+      "caption": "A Super Page pipeline separates planning, rewriting, image generation, and quality review.",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "warn",
+        "notes": "Persisted mock image prompt prepared for open source SEO content workflow; live generation can replace this asset explicitly."
+      }
+    },
+    "regenerationRecommended": false
+  },
+  {
+    "provider": "mock",
+    "mode": "mock",
+    "imageSlotId": "section-editor",
+    "assetPath": "/mock-images/section-editor.svg",
+    "metadata": {
+      "imageSlotId": "section-editor",
+      "provider": "mock",
+      "status": "mock",
+      "prompt": "Subject: A focused editor reviewing paragraph blocks and quality notes\nContext: Realistic laptop and printed editorial checklist in a quiet office. Topic: open source SEO content workflow.\nComposition: Over-the-shoulder view with no readable proprietary interface text\nRealism constraints: natural posture; legible but abstract UI blocks; editorial documentary lighting\nAvoid: fake brand UI; extra fingers; glossy stock-photo look\nNo logos, watermarks, or readable fake UI text unless explicitly requested.",
+      "alt": "Editor reviewing AI rewritten SEO article sections with quality notes",
+      "caption": "Block-level rewriting makes examples, caveats, and tone checks easier to review.",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "warn",
+        "notes": "Persisted mock image prompt prepared for open source SEO content workflow; live generation can replace this asset explicitly."
+      }
+    },
+    "regenerationRecommended": false
+  },
+  {
+    "provider": "mock",
+    "mode": "mock",
+    "imageSlotId": "image-gallery",
+    "assetPath": "/mock-images/image-gallery.svg",
+    "metadata": {
+      "imageSlotId": "image-gallery",
+      "provider": "mock",
+      "status": "mock",
+      "prompt": "Subject: Article image gallery with prompt version cards and QA badges\nContext: Clean web application interface represented as abstract blocks without readable text. Topic: open source SEO content workflow.\nComposition: Three image cards in a grid with subtle quality badges and prompt metadata\nRealism constraints: consistent lighting; no fake text; credible web app layout\nAvoid: watermarks; garbled labels; overly futuristic dashboard\nNo logos, watermarks, or readable fake UI text unless explicitly requested.",
+      "alt": "Image generation gallery showing prompt versions and quality review badges",
+      "caption": "Image prompts and QA status are stored with the article instead of being discarded.",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "warn",
+        "notes": "Persisted mock image prompt prepared for open source SEO content workflow; live generation can replace this asset explicitly."
+      }
+    },
+    "regenerationRecommended": false
+  },
+  {
+    "provider": "mock",
+    "mode": "mock",
+    "imageSlotId": "quality-report",
+    "assetPath": "/mock-images/quality-report.svg",
+    "metadata": {
+      "imageSlotId": "quality-report",
+      "provider": "mock",
+      "status": "mock",
+      "prompt": "Subject: Quality report checklist for SEO article readiness\nContext: Minimal editorial dashboard with pass, warning, and fail states represented by shapes. Topic: open source SEO content workflow.\nComposition: Vertical checklist diagram with clear hierarchy and no tiny text\nRealism constraints: clean diagram layout; accessible contrast; no pseudo-readable paragraphs\nAvoid: busy dashboard; tiny illegible text; brand logos\nNo logos, watermarks, or readable fake UI text unless explicitly requested.",
+      "alt": "Quality report diagram showing SEO content checks before publishing",
+      "caption": "Quality gates should make failures visible before a page is marked publish-ready.",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "pass",
+        "notes": "Persisted mock image prompt prepared for open source SEO content workflow; live generation can replace this asset explicitly."
+      }
+    },
+    "regenerationRecommended": false
+  }
+]

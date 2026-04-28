@@ -119,6 +119,34 @@ function redactedResponse(payload: unknown, image: ExtractedImage) {
   };
 }
 
+function blockedResult(request: ImageGenerationRequest, provider: ImageProvider, providerRequest: unknown, blocker: string, providerResponse?: unknown): ImageGenerationResult {
+  return {
+    provider,
+    mode: "blocked",
+    imageSlotId: request.prompt.imageSlotId,
+    metadata: request.prompt,
+    providerRequest,
+    providerResponse,
+    blocker,
+    regenerationRecommended: shouldRegenerate(request.prompt),
+  };
+}
+
+async function readJsonSafely(response: Response) {
+  const text = await response.text();
+  try {
+    return text ? JSON.parse(text) : {};
+  } catch {
+    return { rawTextPreview: text.slice(0, 500), parseError: "Provider returned non-JSON response." };
+  }
+}
+
+async function postJson(url: string, body: unknown, headers: Record<string, string>) {
+  const response = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+  const payload = await readJsonSafely(response);
+  return { response, payload };
+}
+
 export async function generateMockImage(request: ImageGenerationRequest): Promise<ImageGenerationResult> {
   return {
     provider: request.prompt.provider || "mock",
@@ -133,55 +161,40 @@ export async function generateMockImage(request: ImageGenerationRequest): Promis
 export async function generateLiveImageAttempt(request: ImageGenerationRequest, env: NodeJS.ProcessEnv = process.env): Promise<ImageGenerationResult> {
   const provider = providerFromEnv(env);
   const promptText = request.prompt.prompt;
-
   if (provider === "mock") return generateMockImage(request);
 
   if (provider === "codex-imagen2api") {
     const baseUrl = env.CODEX_IMAGEN2_API_BASE_URL ?? env.IMAGE_AI_BASE_URL;
     const url = `${baseUrl ?? ""}/v1/chat/completions`;
-    const body = {
-      model: env.IMAGE_AI_MODEL ?? "gpt-4o-image",
-      stream: false,
-      messages: [{ role: "user", content: promptText }],
-    };
+    const body = { model: env.IMAGE_AI_MODEL ?? "gpt-4o-image", stream: false, messages: [{ role: "user", content: promptText }] };
     const providerRequest = redactedRequest(url, body);
+    if (!baseUrl) return blockedResult(request, provider, providerRequest, "Missing CODEX_IMAGEN2_API_BASE_URL or IMAGE_AI_BASE_URL for CodexImagen2API image generation.");
 
-    if (!baseUrl) {
-      return { provider, mode: "blocked", imageSlotId: request.prompt.imageSlotId, metadata: request.prompt, providerRequest, blocker: "Missing CODEX_IMAGEN2_API_BASE_URL or IMAGE_AI_BASE_URL for CodexImagen2API image generation.", regenerationRecommended: shouldRegenerate(request.prompt) };
+    try {
+      const { response, payload } = await postJson(url, body, { "Content-Type": "application/json" });
+      if (!response.ok) return blockedResult(request, provider, providerRequest, `CodexImagen2API request failed with HTTP ${response.status}.`, { status: response.status, error: payload?.error?.message ?? payload?.detail ?? payload?.parseError ?? "request failed" });
+      const image = await extractImageFromPayload(payload);
+      const assetPath = saveImage(request.articleSlug, request.prompt.imageSlotId, image);
+      return { provider, mode: "live", imageSlotId: request.prompt.imageSlotId, assetPath, metadata: { ...request.prompt, provider, status: "generated" }, providerRequest, providerResponse: redactedResponse(payload, image), regenerationRecommended: shouldRegenerate(request.prompt) };
+    } catch (error) {
+      return blockedResult(request, provider, providerRequest, error instanceof Error ? error.message : String(error), { errorType: "network-or-image-extraction" });
     }
-
-    const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    const payload = await response.json();
-    if (!response.ok) {
-      return { provider, mode: "blocked", imageSlotId: request.prompt.imageSlotId, metadata: request.prompt, providerRequest, providerResponse: { status: response.status, error: payload?.error?.message ?? payload?.detail ?? "request failed" }, blocker: `CodexImagen2API request failed with HTTP ${response.status}.`, regenerationRecommended: shouldRegenerate(request.prompt) };
-    }
-    const image = await extractImageFromPayload(payload);
-    const assetPath = saveImage(request.articleSlug, request.prompt.imageSlotId, image);
-    return { provider, mode: "live", imageSlotId: request.prompt.imageSlotId, assetPath, metadata: { ...request.prompt, provider, status: "generated" }, providerRequest, providerResponse: redactedResponse(payload, image), regenerationRecommended: shouldRegenerate(request.prompt) };
   }
 
   const baseUrl = env.IMAGE_AI_BASE_URL;
   const apiKey = env.IMAGE_AI_API_KEY ?? env.OPENAI_API_KEY;
   const url = `${baseUrl ?? ""}/images/generations`;
-  const body = {
-    model: env.IMAGE_AI_MODEL ?? "gpt-image-2",
-    prompt: promptText,
-    size: "1024x1024",
-    quality: "high",
-    output_format: "png",
-  };
+  const body = { model: env.IMAGE_AI_MODEL ?? "gpt-image-2", prompt: promptText, size: "1024x1024", quality: "high", output_format: "png" };
   const providerRequest = redactedRequest(url, body);
+  if (!baseUrl || !apiKey) return blockedResult(request, provider, providerRequest, "Missing IMAGE_AI_BASE_URL and/or IMAGE_AI_API_KEY for OpenAI-compatible image generation.");
 
-  if (!baseUrl || !apiKey) {
-    return { provider, mode: "blocked", imageSlotId: request.prompt.imageSlotId, metadata: request.prompt, providerRequest, blocker: "Missing IMAGE_AI_BASE_URL and/or IMAGE_AI_API_KEY for OpenAI-compatible image generation.", regenerationRecommended: shouldRegenerate(request.prompt) };
+  try {
+    const { response, payload } = await postJson(url, body, { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` });
+    if (!response.ok) return blockedResult(request, provider, providerRequest, `OpenAI-compatible image request failed with HTTP ${response.status}.`, { status: response.status, error: payload?.error?.message ?? payload?.parseError ?? "request failed" });
+    const image = await extractImageFromPayload(payload);
+    const assetPath = saveImage(request.articleSlug, request.prompt.imageSlotId, image);
+    return { provider, mode: "live", imageSlotId: request.prompt.imageSlotId, assetPath, metadata: { ...request.prompt, provider, status: "generated" }, providerRequest, providerResponse: redactedResponse(payload, image), regenerationRecommended: shouldRegenerate(request.prompt) };
+  } catch (error) {
+    return blockedResult(request, provider, providerRequest, error instanceof Error ? error.message : String(error), { errorType: "network-or-image-extraction" });
   }
-
-  const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` }, body: JSON.stringify(body) });
-  const payload = await response.json();
-  if (!response.ok) {
-    return { provider, mode: "blocked", imageSlotId: request.prompt.imageSlotId, metadata: request.prompt, providerRequest, providerResponse: { status: response.status, error: payload?.error?.message ?? "request failed" }, blocker: `OpenAI-compatible image request failed with HTTP ${response.status}.`, regenerationRecommended: shouldRegenerate(request.prompt) };
-  }
-  const image = await extractImageFromPayload(payload);
-  const assetPath = saveImage(request.articleSlug, request.prompt.imageSlotId, image);
-  return { provider, mode: "live", imageSlotId: request.prompt.imageSlotId, assetPath, metadata: { ...request.prompt, provider, status: "generated" }, providerRequest, providerResponse: redactedResponse(payload, image), regenerationRecommended: shouldRegenerate(request.prompt) };
 }

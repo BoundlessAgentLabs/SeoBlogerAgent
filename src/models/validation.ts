@@ -29,6 +29,10 @@ export interface ImageGenerationOutput {
   prompt: string;
 }
 
+export interface TaskValidationOptions {
+  expectedOutlineIds?: string[];
+}
+
 export type ValidatedTaskOutput = OutlineOutput | SectionRewriteOutput | ReviewOutput | ImagePromptOutput | ImageGenerationOutput;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -54,7 +58,7 @@ function requireString(value: unknown, path: string, errors: string[]): string {
   return value;
 }
 
-function validateOutline(value: unknown, errors: string[]): OutlineOutput {
+function validateOutline(value: unknown, errors: string[], options: TaskValidationOptions): OutlineOutput {
   if (!isRecord(value)) {
     errors.push("/output must be an object");
     return { sections: [] };
@@ -63,19 +67,32 @@ function validateOutline(value: unknown, errors: string[]): OutlineOutput {
     errors.push("/sections must contain at least one outline section");
     return { sections: [] };
   }
-  return {
-    sections: value.sections.map((item, index) => {
-      if (!isRecord(item)) {
-        errors.push(`/sections/${index} must be an object`);
-        return { id: "", heading: "", searchIntent: "" };
+  const sections = value.sections.map((item, index) => {
+    if (!isRecord(item)) {
+      errors.push(`/sections/${index} must be an object`);
+      return { id: "", heading: "", searchIntent: "" };
+    }
+    return {
+      id: requireString(item.id, `/sections/${index}/id`, errors),
+      heading: requireString(item.heading, `/sections/${index}/heading`, errors),
+      searchIntent: requireString(item.searchIntent, `/sections/${index}/searchIntent`, errors),
+    };
+  });
+
+  if (options.expectedOutlineIds && options.expectedOutlineIds.length > 0) {
+    const actualIds = sections.map((section) => section.id);
+    const expectedIds = options.expectedOutlineIds;
+    if (actualIds.length !== expectedIds.length) {
+      errors.push(`/sections length ${actualIds.length} does not match expected Super Page section count ${expectedIds.length}`);
+    }
+    expectedIds.forEach((expectedId, index) => {
+      if (actualIds[index] !== expectedId) {
+        errors.push(`/sections/${index}/id must be ${expectedId} for this Super Page contract, got ${actualIds[index] || "<missing>"}`);
       }
-      return {
-        id: requireString(item.id, `/sections/${index}/id`, errors),
-        heading: requireString(item.heading, `/sections/${index}/heading`, errors),
-        searchIntent: requireString(item.searchIntent, `/sections/${index}/searchIntent`, errors),
-      };
-    }),
-  };
+    });
+  }
+
+  return { sections };
 }
 
 function validateRewrite(value: unknown, errors: string[]): SectionRewriteOutput {
@@ -97,9 +114,7 @@ function validateReview(value: unknown, errors: string[]): ReviewOutput {
     return { status: "fail", issues: ["invalid review output"] };
   }
   const status = value.status;
-  if (status !== "pass" && status !== "warn" && status !== "fail") {
-    errors.push("/status must be pass, warn, or fail");
-  }
+  if (status !== "pass" && status !== "warn" && status !== "fail") errors.push("/status must be pass, warn, or fail");
   return {
     status: status === "pass" || status === "warn" || status === "fail" ? status : "fail",
     issues: stringArray(value.issues, "/issues", errors),
@@ -127,10 +142,10 @@ function validateImageGeneration(value: unknown, errors: string[]): ImageGenerat
   return { prompt: requireString(value.prompt, "/prompt", errors) };
 }
 
-export function validateTaskOutput(task: ModelTask, value: unknown): { output: ValidatedTaskOutput; errors: string[] } {
+export function validateTaskOutput(task: ModelTask, value: unknown, options: TaskValidationOptions = {}): { output: ValidatedTaskOutput; errors: string[] } {
   const errors: string[] = [];
   const output = (() => {
-    if (task === "outline") return validateOutline(value, errors);
+    if (task === "outline") return validateOutline(value, errors, options);
     if (task === "section-rewrite") return validateRewrite(value, errors);
     if (task === "image-prompt") return validateImagePrompt(value, errors);
     if (task === "image-generation") return validateImageGeneration(value, errors);

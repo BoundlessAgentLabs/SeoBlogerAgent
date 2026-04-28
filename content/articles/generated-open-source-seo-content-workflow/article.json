@@ -1,0 +1,439 @@
+{
+  "schemaVersion": "1.0.0",
+  "slug": "generated-open-source-seo-content-workflow",
+  "brief": {
+    "keyword": "open source SEO content workflow",
+    "intent": "mixed",
+    "audience": "SEO operators, affiliate site builders, and developers evaluating open-source AI writing workflows",
+    "angle": "Open, inspectable Super Page workflow for open source SEO content workflow",
+    "sourceModel": "mock-codex5.5pro"
+  },
+  "metadata": {
+    "title": "Open Source SEO Content Workflow: Inspectable SEO Super Page Workflow",
+    "description": "A generated Super Page workflow for open source SEO content workflow with structure, block rewrites, image prompts, and quality checks.",
+    "canonicalUrl": "https://example.com/articles/generated-open-source-seo-content-workflow",
+    "updatedAt": "2026-04-28",
+    "author": "Boundless Agent Labs",
+    "openGraph": {
+      "title": "Open Source SEO Content Workflow: Inspectable SEO Super Page Workflow",
+      "description": "A generated Super Page workflow for open source SEO content workflow with structure, block rewrites, image prompts, and quality checks.",
+      "image": "/mock-images/ai-seo-super-page-hero.svg"
+    }
+  },
+  "hero": {
+    "headline": "Build a Super Page for Open Source SEO Content Workflow",
+    "answer": "This persisted workflow turns open source SEO content workflow into a structured Super Page plan with generated sections, image prompts, and quality checks.",
+    "summaryBullets": [
+      "Topic-specific structure for open source SEO content workflow",
+      "Section rewrites stay linked to source notes and constraints",
+      "Image prompt metadata is persisted with QA state",
+      "Quality and SEO validation are visible before preview"
+    ],
+    "trustCue": "Research prototype updated on 2026-04-28 with explicit quality gates and mock generation evidence."
+  },
+  "toc": [
+    {
+      "id": "structure-first",
+      "label": "Structure the Open Source SEO Content Workflow Super Page"
+    },
+    {
+      "id": "block-rewriting",
+      "label": "Rewrite each block with context and constraints"
+    },
+    {
+      "id": "image-quality",
+      "label": "Make image generation part of the article plan"
+    },
+    {
+      "id": "quality-gates",
+      "label": "Show quality gates before publishing"
+    }
+  ],
+  "sections": [
+    {
+      "id": "structure-first",
+      "heading": "Structure the Open Source SEO Content Workflow Super Page",
+      "searchIntent": "Understand what a useful open source SEO content workflow Super Page should cover before drafting.",
+      "summaryClaim": "A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text.",
+      "paragraphs": [
+        "A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. This rewrite stays focused on understand what a useful open source seo content workflow super page should cover before drafting. while adding specific example, practical caveat, reader benefit.",
+        "For implementation, the editor sees why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
+      ],
+      "examples": [
+        "For a software comparison page, the schema can require a decision table, best-for labels, caveats, and a final recommendation checklist."
+      ],
+      "caveats": [
+        "The schema should guide quality without forcing every keyword into the same rigid layout."
+      ],
+      "imageSlotId": "hero-workflow",
+      "qualityNotes": [
+        "Mock rewrite used 2 source notes and 3 must-include constraints."
+      ],
+      "sourceNotes": [
+        {
+          "label": "Google people-first baseline",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow.",
+          "sourceType": "research"
+        },
+        {
+          "label": "Product workflow assumption",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow.",
+          "sourceType": "assumption"
+        }
+      ],
+      "generationConstraints": {
+        "mustInclude": [
+          "specific example",
+          "practical caveat",
+          "reader benefit"
+        ],
+        "avoidPhrases": [
+          "In today's digital age",
+          "unlock the power",
+          "delve into",
+          "game changer"
+        ],
+        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
+        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
+      }
+    },
+    {
+      "id": "block-rewriting",
+      "heading": "Rewrite each block with context and constraints",
+      "searchIntent": "The reader wants a practical way to make AI content feel less generic.",
+      "summaryClaim": "Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence.",
+      "paragraphs": [
+        "Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. This rewrite stays focused on the reader wants a practical way to make ai content feel less generic. while adding specific example, practical caveat, reader benefit.",
+        "For implementation, the editor sees why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
+      ],
+      "examples": [
+        "A section about image quality can require one concrete artifact checklist: distorted hands, unreadable text, plastic textures, impossible reflections, and generic stock-photo framing."
+      ],
+      "caveats": [
+        "Block rewriting still needs source discipline; smaller prompts do not automatically make factual claims reliable."
+      ],
+      "imageSlotId": "section-editor",
+      "qualityNotes": [
+        "Mock rewrite used 2 source notes and 3 must-include constraints."
+      ],
+      "sourceNotes": [
+        {
+          "label": "Google people-first baseline",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow.",
+          "sourceType": "research"
+        },
+        {
+          "label": "Product workflow assumption",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow.",
+          "sourceType": "assumption"
+        }
+      ],
+      "generationConstraints": {
+        "mustInclude": [
+          "specific example",
+          "practical caveat",
+          "reader benefit"
+        ],
+        "avoidPhrases": [
+          "In today's digital age",
+          "unlock the power",
+          "delve into",
+          "game changer"
+        ],
+        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
+        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
+      }
+    },
+    {
+      "id": "image-quality",
+      "heading": "Make image generation part of the article plan",
+      "searchIntent": "The reader wants to know how image prompts can improve SEO content quality and user trust.",
+      "summaryClaim": "Article images should explain the topic or demonstrate a workflow, not merely decorate the page.",
+      "paragraphs": [
+        "Article images should explain the topic or demonstrate a workflow, not merely decorate the page. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. This rewrite stays focused on the reader wants to know how image prompts can improve seo content quality and user trust. while adding specific example, practical caveat, reader benefit.",
+        "For implementation, the editor sees why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
+      ],
+      "examples": [
+        "Instead of asking for 'SEO dashboard image', ask for a realistic editorial photo of an analyst reviewing content briefs, with no readable UI text and no floating holographic icons."
+      ],
+      "caveats": [
+        "Some topics are better served by diagrams or annotated screenshots than photorealistic hero images."
+      ],
+      "imageSlotId": "image-gallery",
+      "qualityNotes": [
+        "Mock rewrite used 2 source notes and 3 must-include constraints."
+      ],
+      "sourceNotes": [
+        {
+          "label": "Google people-first baseline",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow.",
+          "sourceType": "research"
+        },
+        {
+          "label": "Product workflow assumption",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow.",
+          "sourceType": "assumption"
+        }
+      ],
+      "generationConstraints": {
+        "mustInclude": [
+          "specific example",
+          "practical caveat",
+          "reader benefit"
+        ],
+        "avoidPhrases": [
+          "In today's digital age",
+          "unlock the power",
+          "delve into",
+          "game changer"
+        ],
+        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
+        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
+      }
+    },
+    {
+      "id": "quality-gates",
+      "heading": "Show quality gates before publishing",
+      "searchIntent": "The reader wants assurance that AI output will not be published blindly.",
+      "summaryClaim": "Visible quality gates make the tool more trustworthy for both developers and editors.",
+      "paragraphs": [
+        "Visible quality gates make the tool more trustworthy for both developers and editors. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. This rewrite stays focused on the reader wants assurance that ai output will not be published blindly. while adding specific example, practical caveat, reader benefit.",
+        "For implementation, the editor sees why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
+      ],
+      "examples": [
+        "A quality report can mark tone as pass, image relevance as warn, and citation coverage as fail, blocking a publish-ready label until the failure is resolved."
+      ],
+      "caveats": [
+        "Quality gates are guardrails, not a replacement for editorial judgment on high-risk topics."
+      ],
+      "imageSlotId": "quality-report",
+      "qualityNotes": [
+        "Mock rewrite used 2 source notes and 3 must-include constraints."
+      ],
+      "sourceNotes": [
+        {
+          "label": "Google people-first baseline",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow.",
+          "sourceType": "research"
+        },
+        {
+          "label": "Product workflow assumption",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow.",
+          "sourceType": "assumption"
+        }
+      ],
+      "generationConstraints": {
+        "mustInclude": [
+          "specific example",
+          "practical caveat",
+          "reader benefit"
+        ],
+        "avoidPhrases": [
+          "In today's digital age",
+          "unlock the power",
+          "delve into",
+          "game changer"
+        ],
+        "claimPolicy": "Do not invent statistics, rankings, quotes, studies, or dates unless they appear in source notes.",
+        "citationPolicy": "If a paragraph makes a factual external claim, keep it source-grounded or mark it for research instead of fabricating a citation."
+      }
+    }
+  ],
+  "faq": [
+    {
+      "question": "Why not generate the full SEO article in one prompt?",
+      "answer": "One-shot generation is fast, but it makes structure, factuality, image planning, and tone review harder to inspect. Block generation allows targeted retries and clearer quality gates."
+    },
+    {
+      "question": "Can this pipeline use models other than Gemini?",
+      "answer": "Yes. The intended model gateway is provider-neutral, so content tasks can route to Codex/OpenAI-compatible models, Gemini, DeepSeek, Kimi, or mock adapters."
+    },
+    {
+      "question": "How do images reduce the AI feel of a blog page?",
+      "answer": "Useful images show specific workflows, objects, or diagrams that support the article. Storing prompts, captions, alt text, and QA status helps avoid generic stock-photo visuals."
+    }
+  ],
+  "internalLinks": [
+    {
+      "anchor": "Super Page schema reference",
+      "href": "/docs/super-page-schema",
+      "purpose": "Help developers inspect required article blocks and validation rules."
+    },
+    {
+      "anchor": "Image quality rubric",
+      "href": "/docs/image-quality-rubric",
+      "purpose": "Explain how generated images are reviewed before publishing."
+    }
+  ],
+  "imageSlots": [
+    {
+      "id": "hero-workflow",
+      "kind": "hero",
+      "purpose": "Explain the end-to-end Super Page generation workflow visually.",
+      "prompt": {
+        "subject": "Editorial workspace showing structured SEO article planning on a large monitor",
+        "context": "A realistic content strategist desk with notes, page outline cards, and image prompt checklist. Topic: open source SEO content workflow.",
+        "composition": "Wide hero image with the workspace centered and calm negative space for headline overlay",
+        "realismConstraints": [
+          "natural screen glow",
+          "realistic desk materials",
+          "no impossible reflections"
+        ],
+        "avoid": [
+          "floating holograms",
+          "unreadable text",
+          "distorted hands",
+          "brand logos"
+        ]
+      },
+      "alt": "Content strategist planning a structured AI SEO Super Page workflow",
+      "caption": "A Super Page pipeline separates planning, rewriting, image generation, and quality review.",
+      "provider": "mock",
+      "status": "mock",
+      "assetPath": "/mock-images/hero-workflow.svg",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "warn",
+        "notes": "Persisted mock image prompt prepared for open source SEO content workflow; live generation can replace this asset explicitly."
+      }
+    },
+    {
+      "id": "section-editor",
+      "kind": "section",
+      "purpose": "Show section-by-section rewriting with visible intent and caveat fields.",
+      "prompt": {
+        "subject": "A focused editor reviewing paragraph blocks and quality notes",
+        "context": "Realistic laptop and printed editorial checklist in a quiet office. Topic: open source SEO content workflow.",
+        "composition": "Over-the-shoulder view with no readable proprietary interface text",
+        "realismConstraints": [
+          "natural posture",
+          "legible but abstract UI blocks",
+          "editorial documentary lighting"
+        ],
+        "avoid": [
+          "fake brand UI",
+          "extra fingers",
+          "glossy stock-photo look"
+        ]
+      },
+      "alt": "Editor reviewing AI rewritten SEO article sections with quality notes",
+      "caption": "Block-level rewriting makes examples, caveats, and tone checks easier to review.",
+      "provider": "mock",
+      "status": "mock",
+      "assetPath": "/mock-images/section-editor.svg",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "warn",
+        "notes": "Persisted mock image prompt prepared for open source SEO content workflow; live generation can replace this asset explicitly."
+      }
+    },
+    {
+      "id": "image-gallery",
+      "kind": "section",
+      "purpose": "Demonstrate image prompt variants and regeneration status.",
+      "prompt": {
+        "subject": "Article image gallery with prompt version cards and QA badges",
+        "context": "Clean web application interface represented as abstract blocks without readable text. Topic: open source SEO content workflow.",
+        "composition": "Three image cards in a grid with subtle quality badges and prompt metadata",
+        "realismConstraints": [
+          "consistent lighting",
+          "no fake text",
+          "credible web app layout"
+        ],
+        "avoid": [
+          "watermarks",
+          "garbled labels",
+          "overly futuristic dashboard"
+        ]
+      },
+      "alt": "Image generation gallery showing prompt versions and quality review badges",
+      "caption": "Image prompts and QA status are stored with the article instead of being discarded.",
+      "provider": "mock",
+      "status": "mock",
+      "assetPath": "/mock-images/image-gallery.svg",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "warn",
+        "notes": "Persisted mock image prompt prepared for open source SEO content workflow; live generation can replace this asset explicitly."
+      }
+    },
+    {
+      "id": "quality-report",
+      "kind": "diagram",
+      "purpose": "Visualize publish readiness checks before an article goes live.",
+      "prompt": {
+        "subject": "Quality report checklist for SEO article readiness",
+        "context": "Minimal editorial dashboard with pass, warning, and fail states represented by shapes. Topic: open source SEO content workflow.",
+        "composition": "Vertical checklist diagram with clear hierarchy and no tiny text",
+        "realismConstraints": [
+          "clean diagram layout",
+          "accessible contrast",
+          "no pseudo-readable paragraphs"
+        ],
+        "avoid": [
+          "busy dashboard",
+          "tiny illegible text",
+          "brand logos"
+        ]
+      },
+      "alt": "Quality report diagram showing SEO content checks before publishing",
+      "caption": "Quality gates should make failures visible before a page is marked publish-ready.",
+      "provider": "mock",
+      "status": "mock",
+      "assetPath": "/mock-images/quality-report.svg",
+      "qa": {
+        "relevance": "pass",
+        "textArtifacts": "pass",
+        "realism": "pass",
+        "notes": "Persisted mock image prompt prepared for open source SEO content workflow; live generation can replace this asset explicitly."
+      }
+    }
+  ],
+  "breadcrumbs": [
+    {
+      "name": "Home",
+      "href": "/"
+    },
+    {
+      "name": "Articles",
+      "href": "/articles"
+    },
+    {
+      "name": "AI SEO Super Page Generator",
+      "href": "/articles/ai-seo-super-page-generator"
+    }
+  ],
+  "qualityGates": [
+    {
+      "id": "structure-complete",
+      "label": "Required Super Page blocks are present",
+      "status": "pass",
+      "severity": "high",
+      "evidence": "Hero, sections, FAQ, internal links, image slots, metadata, breadcrumbs, and quality gates are populated."
+    },
+    {
+      "id": "anti-ai-tone",
+      "label": "Generic AI tone check",
+      "status": "pass",
+      "severity": "medium",
+      "evidence": "Sections include concrete examples, caveats, and avoid repeated generic introductions."
+    },
+    {
+      "id": "image-readiness",
+      "label": "Image prompt and metadata readiness",
+      "status": "warn",
+      "severity": "medium",
+      "evidence": "Prompt metadata is complete, but assets are deterministic mock placeholders."
+    },
+    {
+      "id": "seo-metadata",
+      "label": "SEO metadata completeness",
+      "status": "pass",
+      "severity": "high",
+      "evidence": "Title, description, canonical, Open Graph, breadcrumbs, and image alt text are present."
+    }
+  ]
+}

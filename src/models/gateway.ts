@@ -1,5 +1,5 @@
 import { buildPrompt, type PromptTemplate } from "./prompts";
-import { validateTaskOutput, type ValidatedTaskOutput } from "./validation";
+import { validateTaskOutput, type TaskValidationOptions, type ValidatedTaskOutput } from "./validation";
 import type { SuperPage } from "@/super-page/types";
 import { reviewTextQuality } from "@/quality/content";
 
@@ -140,8 +140,18 @@ function mockOutput(request: ModelRequest) {
   return { status: relevant.length > 0 ? "fail" : "pass", issues: relevant.map((issue) => issue.evidence) };
 }
 
-function validateOrThrow(task: ModelTask, value: unknown): { output: ValidatedTaskOutput; errors: string[] } {
-  const validation = validateTaskOutput(task, value);
+function validationOptionsFor(request: ModelRequest): TaskValidationOptions {
+  if (request.task !== "outline") return {};
+  const expectedOutlineIds = Array.isArray(request.context?.expectedOutlineIds)
+    ? request.context.expectedOutlineIds.filter((item): item is string => typeof item === "string")
+    : request.context?.page && typeof request.context.page === "object" && "sections" in request.context.page
+      ? (request.context.page as SuperPage).sections.map((section) => section.id)
+      : undefined;
+  return { expectedOutlineIds };
+}
+
+function validateOrThrow(request: ModelRequest, value: unknown): { output: ValidatedTaskOutput; errors: string[] } {
+  const validation = validateTaskOutput(request.task, value, validationOptionsFor(request));
   if (validation.errors.length > 0) {
     return validation;
   }
@@ -204,7 +214,7 @@ export async function generateWithModel<T = unknown>(request: ModelRequest, env:
 
   if (mode === "mock") {
     const value = mockOutput(request);
-    const validation = validateOrThrow(request.task, value);
+    const validation = validateOrThrow(request, value);
     return {
       provider: route.provider,
       model: route.model,
@@ -221,7 +231,7 @@ export async function generateWithModel<T = unknown>(request: ModelRequest, env:
 
   if (!route.baseUrl || !route.apiKeyPresent) {
     const blocked = { status: "fail", issues: [`Missing provider credentials for ${route.provider}.`] };
-    const validation = validateTaskOutput(request.task, blocked);
+    const validation = validateTaskOutput(request.task, blocked, validationOptionsFor(request));
     return {
       provider: route.provider,
       model: route.model,
@@ -245,7 +255,7 @@ export async function generateWithModel<T = unknown>(request: ModelRequest, env:
     parsed = {};
     parseWarnings.push(error instanceof Error ? error.message : String(error));
   }
-  const validation = validateOrThrow(request.task, parsed);
+  const validation = validateOrThrow(request, parsed);
   const warnings = [...parseWarnings, ...(response.ok ? [] : [`HTTP ${response.status}`]), ...validation.errors];
   return {
     provider: route.provider,
