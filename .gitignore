@@ -42,3 +42,6 @@ tmp/
 
 # Humanize local runtime state
 .humanize/
+
+# TypeScript incremental cache
+*.tsbuildinfo

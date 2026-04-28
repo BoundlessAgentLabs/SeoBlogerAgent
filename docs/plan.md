@@ -4,7 +4,7 @@
 
 Build an open-source SEO Super Page generation platform that can replace the core value of `seowriting.ai` while improving content depth, article originality, image realism, and developer customizability.
 
-The first milestone is not a full SaaS clone. It is a working MVP that can take a keyword/topic, generate a structured Super Page plan, rewrite article blocks with Gemini, generate realistic article images, and render a publishable SEO page through an open-source Next.js-based web interface.
+The first milestone is not a full SaaS clone. It is a working MVP that can take a keyword/topic, generate a structured Super Page plan, rewrite article blocks through provider-neutral model adapters, generate realistic article images, and render a publishable SEO page through an open-source Next.js-based web interface.
 
 ## Acceptance Criteria
 
@@ -18,7 +18,7 @@ The first milestone is not a full SaaS clone. It is a working MVP that can take 
 
 - AC-2: Content generation is block-based, not one-shot article generation.
   - Positive Tests:
-    - Each section can be rewritten independently by Gemini using the section intent, source notes, and anti-AI-tone constraints.
+    - Each section can be rewritten independently through Codex/OpenAI-compatible models, Gemini, DeepSeek, Kimi/Moonshot, or mock adapters using the section intent, source notes, and anti-AI-tone constraints.
     - The generated content contains examples, caveats, and non-repetitive phrasing.
   - Negative Tests:
     - Repetitive generic intros fail the quality gate.

@@ -53,3 +53,10 @@ Recommended import approach:
 ## Fallback
 
 If `nooqta/ai-content` fails to build cleanly or introduces too much legacy complexity, fall back to a clean custom Next.js scaffold while using `ixartz/Next-js-Blog-Boilerplate` as an SEO layout reference.
+
+
+## Round 1 Validation Update
+
+`nooqta/ai-content` was cloned into `/tmp/seo-framework-candidates/nooqta-ai-content` and validated with `npm install` and `npm run build` on 2026-04-28. The build succeeded but reported Contentlayer warnings for three invalid MDX documents. Its App Router + Tailwind + content-file approach remains useful, but its deprecated one-shot OpenAI generator is not suitable for this project's block-based, provider-neutral architecture.
+
+The repository now uses a clean Next.js App Router scaffold rather than copying the legacy generator. See `docs/research/framework-validation.md` for commands and results.

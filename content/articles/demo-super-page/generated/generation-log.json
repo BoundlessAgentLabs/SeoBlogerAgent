@@ -1,0 +1,16 @@
+[
+  {
+    "sectionId": "structure-first",
+    "provider": "openai-compatible",
+    "model": "codex5.5pro",
+    "mode": "mock",
+    "output": "[mock:section-rewrite] Start with a Super Page schema before writing A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text."
+  },
+  {
+    "sectionId": "block-rewriting",
+    "provider": "openai-compatible",
+    "model": "codex5.5pro",
+    "mode": "mock",
+    "output": "[mock:section-rewrite] Rewrite each block with context and constraints Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence."
+  }
+]

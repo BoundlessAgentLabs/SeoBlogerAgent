@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0.0",
+  "slug": "missing-required-blocks",
+  "brief": {
+    "keyword": "bad fixture",
+    "intent": "informational",
+    "audience": "testers",
+    "angle": "This intentionally omits required blocks.",
+    "sourceModel": "mock"
+  }
+}

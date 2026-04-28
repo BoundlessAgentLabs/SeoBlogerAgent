@@ -1,0 +1,61 @@
+{
+  "articleSlug": "ai-seo-super-page-generator",
+  "generatedAt": "2026-04-28T00:00:00.000Z",
+  "mode": "mock",
+  "gates": [
+    {
+      "id": "structure-complete",
+      "label": "Required Super Page blocks are present",
+      "status": "pass",
+      "severity": "high",
+      "evidence": "Hero, sections, FAQ, internal links, image slots, metadata, breadcrumbs, and quality gates are populated."
+    },
+    {
+      "id": "anti-ai-tone",
+      "label": "Generic AI tone check",
+      "status": "pass",
+      "severity": "medium",
+      "evidence": "Sections include concrete examples, caveats, and avoid repeated generic introductions."
+    },
+    {
+      "id": "image-readiness",
+      "label": "Image prompt and metadata readiness",
+      "status": "warn",
+      "severity": "medium",
+      "evidence": "Prompt metadata is complete, but assets are deterministic mock placeholders."
+    },
+    {
+      "id": "seo-metadata",
+      "label": "SEO metadata completeness",
+      "status": "pass",
+      "severity": "high",
+      "evidence": "Title, description, canonical, Open Graph, breadcrumbs, and image alt text are present."
+    }
+  ],
+  "seo": {
+    "valid": true,
+    "errors": [],
+    "warnings": [
+      "/ai-seo-super-page-generator/imageSlots/hero-workflow/qa realism needs future generated-image review",
+      "/ai-seo-super-page-generator/imageSlots/section-editor/qa realism needs future generated-image review",
+      "/ai-seo-super-page-generator/imageSlots/image-gallery/qa realism needs future generated-image review"
+    ]
+  },
+  "sectionLogs": [
+    {
+      "sectionId": "structure-first",
+      "provider": "openai-compatible",
+      "model": "codex5.5pro",
+      "mode": "mock",
+      "output": "[mock:section-rewrite] Start with a Super Page schema before writing A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text."
+    },
+    {
+      "sectionId": "block-rewriting",
+      "provider": "openai-compatible",
+      "model": "codex5.5pro",
+      "mode": "mock",
+      "output": "[mock:section-rewrite] Rewrite each block with context and constraints Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence."
+    }
+  ],
+  "imageCount": 4
+}

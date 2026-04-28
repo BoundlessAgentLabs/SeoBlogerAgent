@@ -4,7 +4,7 @@ Open-source research project for building a stronger SEO Super Page generation p
 
 ## Purpose
 
-This project is for learning and research. It explores how to build an open-source alternative to closed SEO writing tools by combining:
+This project explores how to build an open-source alternative to closed SEO writing tools by combining:
 
 - Structured SEO Super Page planning.
 - Provider-neutral AI content rewriting.
@@ -12,30 +12,98 @@ This project is for learning and research. It explores how to build an open-sour
 - Quality gates that reduce generic AI tone.
 - A self-hostable web UI.
 
-## Current Direction
+The repository is for learning, research, and open-source experimentation. Do not commit secrets, competitor credentials, or proprietary competitor assets.
 
-The current plan is documented in `docs/plan.md`.
+## Current MVP
 
-Key decisions:
+Round 1 now includes a working Next.js App Router foundation:
 
-- Super Pages are generated block-by-block, not as one giant article prompt.
-- The content engine is provider-neutral and can use Codex/OpenAI-compatible models, Gemini, DeepSeek, Kimi/Moonshot, or future providers.
-- The local default preference is `codex5.5pro` when available through the owner's configured proxy.
-- Image generation is treated as a first-class pipeline, with local `CodexImagen2API` experiments and future GPT Image adapters.
-- UI design will use `kimi-consult` once a real app shell exists.
-- Implementation should proceed with Humanize RLCR review loops.
+- Machine-readable Super Page JSON schema: `content/schemas/super-page.schema.json`
+- Positive sample fixture: `content/articles/demo-super-page/article.json`
+- Negative validation fixtures: `content/articles/negative-*`
+- Content and SEO validator: `scripts/validate-content.ts`
+- Deterministic mock generation pipeline: `scripts/generate-mock.ts`
+- Provider-neutral model routing contract: `src/models/gateway.ts`
+- Image prompt and mock adapter contracts: `src/images/`
+- Rendered article preview: `app/articles/[slug]/page.tsx`
+- Authoring workflow UI: `app/workflow/page.tsx`
 
-## Local Environment
+## Quick Start
 
-Do not commit real secrets. Copy `.env.example` and provide private values locally.
+```bash
+npm install
+npm run validate:content
+npm run generate:mock
+npm run build
+npm run dev
+```
 
-The owner's machine can reuse private provider settings from:
+Open locally:
+
+- Home: `http://localhost:3000`
+- Authoring workflow: `http://localhost:3000/workflow`
+- Sample Super Page: `http://localhost:3000/articles/ai-seo-super-page-generator`
+
+## Validation Commands
+
+### Content and SEO validation
+
+```bash
+npm run validate:content
+```
+
+This validates:
+
+- The positive Super Page fixture passes JSON schema and semantic checks.
+- Negative fixtures fail with actionable error paths.
+- SEO readiness catches duplicate canonicals, missing alt text, failing quality gates, and image QA failures.
+
+### Mock generation
+
+```bash
+npm run generate:mock
+```
+
+This writes deterministic artifacts to:
+
+```text
+content/articles/demo-super-page/generated/generation-log.json
+content/articles/demo-super-page/generated/image-metadata.json
+content/articles/demo-super-page/generated/quality-report.json
+```
+
+### Build
+
+```bash
+npm run build
+```
+
+The build statically renders the home page, workflow page, and sample article route.
+
+## Model Routing
+
+The content engine is provider-neutral. The local default preference is `codex5.5pro`, but runtime configuration can route work to Codex/OpenAI-compatible models, Gemini, DeepSeek, Kimi/Moonshot, or future providers.
+
+Provider-neutral environment variables:
+
+```text
+AI_PROVIDER
+AI_MODEL
+AI_BASE_URL
+AI_API_KEY
+IMAGE_AI_PROVIDER
+IMAGE_AI_MODEL
+IMAGE_AI_BASE_URL
+IMAGE_AI_API_KEY
+```
+
+The owner's machine may reuse private provider settings from:
 
 ```text
 /Users/gs2ygc/injecttion-molding-agent/.env
 ```
 
-Only variable names are documented; secret values are not stored in this repository.
+Only variable names are documented. Secret values are not stored in this repository.
 
 ## Documentation
 
@@ -44,9 +112,13 @@ Only variable names are documented; secret values are not stored in this reposit
 - `docs/research/super-page-structure.md` — SEO Super Page structure research.
 - `docs/research/framework-candidates.md` — candidate starter frameworks.
 - `docs/research/framework-decision.md` — current framework decision.
+- `docs/research/framework-validation.md` — local install/build validation for candidate frameworks.
+- `docs/research/image-quality-rubric.md` — image quality checks and prompt rules.
 - `docs/architecture/model-routing.md` — provider-neutral model routing design.
 - `docs/architecture/initial-architecture.md` — initial system architecture.
 - `docs/ui/kimi-consult-brief.md` — future UI design consultation brief.
+- `docs/ui/kimi-review-log.md` — Round 1 Kimi UI review attempt and failure log.
+- `docs/operations/humanize.md` — Humanize install, RLCR, and side-work operations.
 
 ## Safety Notes
 
