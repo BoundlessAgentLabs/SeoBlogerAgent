@@ -33,6 +33,8 @@ export function validateImageReadiness(page: SuperPage): ImageReadinessResult {
     if (slot.qa.relevance === "fail") errors.push(`${path}/qa relevance failed and requires regeneration`);
     if (slot.qa.textArtifacts === "fail") errors.push(`${path}/qa textArtifacts failed and requires regeneration`);
     if (slot.qa.realism === "fail") errors.push(`${path}/qa realism failed and requires regeneration`);
+    if (slot.qa.relevance === "warn") warnings.push(`${path}/qa relevance needs generated-image review`);
+    if (slot.qa.textArtifacts === "warn") warnings.push(`${path}/qa textArtifacts needs generated-image review`);
     if (slot.qa.realism === "warn") warnings.push(`${path}/qa realism needs generated-image review`);
     if (looksLikeStockComposition(slot)) errors.push(`${path}/prompt composition looks like generic stock-photo imagery and requires regeneration`);
   }

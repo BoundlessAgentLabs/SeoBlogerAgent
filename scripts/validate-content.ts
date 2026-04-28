@@ -56,6 +56,26 @@ function validateSeoNegativeCases(validPages: SuperPage[]): number {
   return (duplicatePassed ? 0 : 1) + (missingAltPassed ? 0 : 1);
 }
 
+function validateDuplicateIdCases(validPages: SuperPage[]): number {
+  if (validPages.length === 0) return 1;
+  const cases: Array<{ id: string; mutate: (page: SuperPage) => void; expectedText: string }> = [
+    { id: "toc-id", expectedText: "/toc/1/id duplicates", mutate: (page) => { page.toc[1].id = page.toc[0].id; } },
+    { id: "section-id", expectedText: "/sections/1/id duplicates", mutate: (page) => { page.sections[1].id = page.sections[0].id; } },
+    { id: "image-slot-id", expectedText: "/imageSlots/1/id duplicates", mutate: (page) => { page.imageSlots[1].id = page.imageSlots[0].id; } },
+  ];
+  let failures = 0;
+  for (const item of cases) {
+    const page = clonePage(validPages[0]);
+    item.mutate(page);
+    const result = validateSuperPage(page);
+    const passed = result.errors.some((error) => error.includes(item.expectedText));
+    console.log(`${passed ? "PASS" : "FAIL"} schema:${item.id}-duplicate expected=fail`);
+    for (const error of result.errors) console.log(`  - ${error}`);
+    if (!passed) failures += 1;
+  }
+  return failures;
+}
+
 function validateImageNegativeCases(validPages: SuperPage[]): number {
   if (validPages.length === 0) return 1;
   const cases: Array<{ id: string; mutate: (page: SuperPage) => void; expectedText: string }> = [
@@ -72,6 +92,22 @@ function validateImageNegativeCases(validPages: SuperPage[]): number {
     const passed = result.errors.some((error) => error.includes(item.expectedText));
     console.log(`${passed ? "PASS" : "FAIL"} image:${item.id} expected=fail`);
     for (const error of result.errors) console.log(`  - ${error}`);
+    if (!passed) failures += 1;
+  }
+
+  const warningCases: Array<{ id: string; mutate: (page: SuperPage) => void; expectedText: string }> = [
+    { id: "qa-relevance-warn", expectedText: "relevance needs", mutate: (page) => { page.imageSlots[0].qa.relevance = "warn"; } },
+    { id: "qa-text-artifacts-warn", expectedText: "textArtifacts needs", mutate: (page) => { page.imageSlots[0].qa.textArtifacts = "warn"; } },
+    { id: "qa-realism-warn", expectedText: "realism needs", mutate: (page) => { page.imageSlots[0].qa.realism = "warn"; } },
+  ];
+  for (const item of warningCases) {
+    const page = clonePage(validPages[0]);
+    item.mutate(page);
+    const result = validateImageReadiness(page);
+    const seo = validateSeoReadiness([page]);
+    const passed = result.warnings.some((warning) => warning.includes(item.expectedText)) && seo.warnings.some((warning) => warning.includes(item.expectedText));
+    console.log(`${passed ? "PASS" : "FAIL"} image:${item.id} expected=warn`);
+    for (const warning of result.warnings) console.log(`  - ${warning}`);
     if (!passed) failures += 1;
   }
   return failures;
@@ -271,6 +307,7 @@ async function main() {
 
   const qualityFailures = validateQualityCases();
   const seoNegativeFailures = validateSeoNegativeCases(validPages);
+  const duplicateIdFailures = validateDuplicateIdCases(validPages);
   const imageNegativeFailures = validateImageNegativeCases(validPages);
   const jsonLdFailures = validateJsonLdCases(validPages);
   const renderFailures = validateRenderCases(validPages);
@@ -278,12 +315,12 @@ async function main() {
   const generatedReportFailures = validateGeneratedReports();
   const workflowTopicFailures = await validateWorkflowTopicCases();
   const failed = results.filter((result) => !result.passed);
-  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
-    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
+  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
+    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
     process.exit(1);
   }
 
-  console.log(`Content validation passed for ${results.length} schema case(s), including quality, image, JSON-LD, render, provider diagnostic, generated-report, workflow-topic, and SEO negative checks.`);
+  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, render, provider diagnostic, generated-report, workflow-topic, and SEO negative checks.`);
 }
 
 main().catch((error) => {

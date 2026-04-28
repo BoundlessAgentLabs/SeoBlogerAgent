@@ -25,6 +25,16 @@ function canonicalPath(value: string): string {
   }
 }
 
+function addDuplicateIdErrors(values: string[], path: string, errors: string[]) {
+  const seen = new Set<string>();
+  for (const [index, value] of values.entries()) {
+    if (seen.has(value)) {
+      errors.push(`${path}/${index}/id duplicates ${value}`);
+    }
+    seen.add(value);
+  }
+}
+
 export function validateSuperPage(value: unknown): ValidationResult {
   const valid = validateSchema(value);
   const schemaErrors = valid ? [] : (validateSchema.errors ?? []).map(formatError);
@@ -35,6 +45,10 @@ export function validateSuperPage(value: unknown): ValidationResult {
 
   const page = value as unknown as SuperPage;
   const semanticErrors: string[] = [];
+  addDuplicateIdErrors(page.toc.map((item) => item.id), "/toc", semanticErrors);
+  addDuplicateIdErrors(page.sections.map((section) => section.id), "/sections", semanticErrors);
+  addDuplicateIdErrors(page.imageSlots.map((slot) => slot.id), "/imageSlots", semanticErrors);
+
   const tocIds = new Set(page.toc.map((item) => item.id));
   const sectionIds = new Set(page.sections.map((section) => section.id));
   const imageIds = new Set(page.imageSlots.map((slot) => slot.id));
