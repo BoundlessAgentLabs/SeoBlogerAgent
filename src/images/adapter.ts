@@ -185,12 +185,12 @@ export async function generateLiveImageAttempt(request: ImageGenerationRequest, 
     }
   }
 
-  const baseUrl = firstPresent(env.IMAGE_AI_BASE_URL);
+  const baseUrl = firstPresent(env.IMAGE_AI_BASE_URL, env.OPENAI_BASE_URL);
   const apiKey = firstPresent(env.IMAGE_AI_API_KEY, env.OPENAI_API_KEY);
   const url = `${baseUrl ?? ""}/images/generations`;
   const body = { model: env.IMAGE_AI_MODEL ?? "gpt-image-2", prompt: promptText, size: "1024x1024", quality: "high", output_format: "png" };
   const providerRequest = redactedRequest(url, body);
-  if (!baseUrl || !apiKey) return blockedResult(request, provider, providerRequest, "Missing IMAGE_AI_BASE_URL and/or IMAGE_AI_API_KEY for OpenAI-compatible image generation.");
+  if (!baseUrl || !apiKey) return blockedResult(request, provider, providerRequest, "Missing IMAGE_AI_BASE_URL/OPENAI_BASE_URL and/or IMAGE_AI_API_KEY/OPENAI_API_KEY for OpenAI-compatible image generation.");
 
   try {
     const { response, payload } = await postJson(url, body, { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` });

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import * as sitemapModule from "../app/sitemap";
+import * as articleIndexModule from "../app/articles/page";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { generateWorkflowProjectAction } from "../app/workflow/actions";
@@ -79,13 +80,21 @@ function validateInternalLinkCases(validPages: SuperPage[]): number {
   return failures;
 }
 
-function validateSitemapRuntimeMode(): number {
-  const dynamic = (sitemapModule as { dynamic?: string }).dynamic;
-  const revalidate = (sitemapModule as { revalidate?: number }).revalidate;
-  const passed = dynamic === "force-dynamic" && revalidate === 0;
-  console.log(`${passed ? "PASS" : "FAIL"} sitemap:runtime-generated-articles expected=dynamic`);
-  if (!passed) console.log(`  - dynamic=${dynamic ?? "<unset>"} revalidate=${revalidate ?? "<unset>"}`);
-  return passed ? 0 : 1;
+function validateRuntimeDiscoveryModes(): number {
+  const cases = [
+    { id: "sitemap", module: sitemapModule as { dynamic?: string; revalidate?: number } },
+    { id: "article-index", module: articleIndexModule as { dynamic?: string; revalidate?: number } },
+  ];
+  let failures = 0;
+  for (const item of cases) {
+    const dynamic = item.module.dynamic;
+    const revalidate = item.module.revalidate;
+    const passed = dynamic === "force-dynamic" && revalidate === 0;
+    console.log(`${passed ? "PASS" : "FAIL"} runtime-discovery:${item.id} expected=dynamic`);
+    if (!passed) console.log(`  - dynamic=${dynamic ?? "<unset>"} revalidate=${revalidate ?? "<unset>"}`);
+    if (!passed) failures += 1;
+  }
+  return failures;
 }
 
 function validateSeoNegativeCases(validPages: SuperPage[]): number {
@@ -250,10 +259,10 @@ async function validateImageCredentialFallbackCases(validPages: SuperPage[]): Pr
     const record = imagePromptRecord(validPages[0].imageSlots[0]);
     const result = await generateLiveImageAttempt(
       { articleSlug: validPages[0].slug, prompt: record, mode: "live" },
-      { IMAGE_AI_PROVIDER: "openai-compatible", IMAGE_AI_BASE_URL: "https://image-provider.test/v1", IMAGE_AI_API_KEY: "", OPENAI_API_KEY: "alias-key" } as unknown as NodeJS.ProcessEnv,
+      { IMAGE_AI_PROVIDER: "openai-compatible", IMAGE_AI_BASE_URL: "", OPENAI_BASE_URL: "https://image-provider.test/v1", IMAGE_AI_API_KEY: "", OPENAI_API_KEY: "alias-key" } as unknown as NodeJS.ProcessEnv,
     );
     const passed = fetched && observedAuthorization === "Bearer alias-key" && result.mode === "blocked" && result.blocker?.includes("HTTP 400");
-    console.log(`${passed ? "PASS" : "FAIL"} image-credentials:blank-primary-falls-back expected=pass`);
+    console.log(`${passed ? "PASS" : "FAIL"} image-credentials:openai-alias-falls-back expected=pass`);
     if (!passed) console.log(`  - fetched=${fetched} authorization=${observedAuthorization || "<missing>"} blocker=${result.blocker ?? "<none>"}`);
     return passed ? 0 : 1;
   } finally {
@@ -424,7 +433,7 @@ async function main() {
   const imageNegativeFailures = validateImageNegativeCases(validPages);
   const jsonLdFailures = validateJsonLdCases(validPages);
   const internalLinkFailures = validateInternalLinkCases(validPages);
-  const sitemapRuntimeFailures = validateSitemapRuntimeMode();
+  const runtimeDiscoveryFailures = validateRuntimeDiscoveryModes();
   const renderFailures = validateRenderCases(validPages);
   const providerDiagnosticFailures = await validateProviderDiagnosticCases();
   const imageCredentialFailures = await validateImageCredentialFallbackCases(validPages);
@@ -432,12 +441,12 @@ async function main() {
   const generatedReportFailures = validateGeneratedReports();
   const workflowTopicFailures = await validateWorkflowTopicCases();
   const failed = results.filter((result) => !result.passed);
-  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || internalLinkFailures > 0 || sitemapRuntimeFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || workflowActionGuardFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
-    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${internalLinkFailures} internal-link case(s), ${sitemapRuntimeFailures} sitemap runtime case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${workflowActionGuardFailures} workflow action guard case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
+  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || duplicateIdFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || internalLinkFailures > 0 || runtimeDiscoveryFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || imageCredentialFailures > 0 || workflowActionGuardFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
+    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${duplicateIdFailures} duplicate-id case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${internalLinkFailures} internal-link case(s), ${runtimeDiscoveryFailures} runtime discovery case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${imageCredentialFailures} image credential case(s), ${workflowActionGuardFailures} workflow action guard case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
     process.exit(1);
   }
 
-  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, internal-link, sitemap runtime, render, provider diagnostic, image credential, workflow action guard, generated-report, workflow-topic, and SEO negative checks.`);
+  console.log(`Content validation passed for ${results.length} schema case(s), including duplicate-id, quality, image, JSON-LD, internal-link, runtime discovery, render, provider diagnostic, image credential, workflow action guard, generated-report, workflow-topic, and SEO negative checks.`);
 }
 
 main().catch((error) => {
