@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { generateWithModel, promptForPage, promptForSection } from "@/models/gateway";
@@ -55,9 +56,36 @@ interface SectionLog {
   qualityStatus: ReturnType<typeof qualityStatusFromIssues>;
 }
 
+function topicHash(topic: string) {
+  return createHash("sha1").update(topic.trim()).digest("hex").slice(0, 8);
+}
+
 function slugifyTopic(topic: string) {
-  const normalized = topic.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 56);
-  return normalized || "untitled-topic";
+  const source = topic.trim().toLowerCase();
+  const fullSlug = source.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const hash = topicHash(topic);
+  const containsNonAscii = /[^\u0000-\u007f]/.test(source);
+  if (!fullSlug) return `topic-${hash}`;
+  if (containsNonAscii || fullSlug.length > 44) return `${fullSlug.slice(0, 44).replace(/-+$/g, "")}-${hash}`;
+  return fullSlug;
+}
+
+function compactText(input: string) {
+  return input.replace(/\s+/g, " ").trim();
+}
+
+function limitText(input: string, maxLength: number) {
+  const compact = compactText(input);
+  if (compact.length <= maxLength) return compact;
+  return `${compact.slice(0, maxLength - 1).trimEnd()}…`;
+}
+
+function workflowMetadataTitle(topicTitle: string) {
+  return limitText(`${topicTitle}: Inspectable SEO Super Page Workflow`, 70);
+}
+
+function workflowMetadataDescription(topicText: string) {
+  return limitText(`Generated Super Page workflow for ${topicText}: structure, block rewrites, image prompts, quality checks, and SEO preview.`, 170);
 }
 
 function isoNow() {
@@ -95,8 +123,8 @@ function topicArticleFromTemplate(template: SuperPage, input: WorkflowProjectInp
   article.slug = slug;
   article.brief.keyword = topicText;
   article.brief.angle = `Open, inspectable Super Page workflow for ${topicText}. ${instructionSummary}`;
-  article.metadata.title = `${topicTitle}: Inspectable SEO Super Page Workflow`;
-  article.metadata.description = `A generated Super Page workflow for ${topicText} with structure, block rewrites, image prompts, and quality checks.`;
+  article.metadata.title = workflowMetadataTitle(topicTitle);
+  article.metadata.description = workflowMetadataDescription(topicText);
   article.metadata.canonicalUrl = canonicalUrl;
   article.metadata.openGraph.title = article.metadata.title;
   article.metadata.openGraph.description = article.metadata.description;

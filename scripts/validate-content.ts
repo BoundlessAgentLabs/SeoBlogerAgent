@@ -4,6 +4,8 @@ import { reviewTextQuality } from "../src/quality/content";
 import { validateSuperPage, assertSuperPage } from "../src/super-page/validation";
 import { validateSeoReadiness } from "../src/seo/validation";
 import { validateImageReadiness } from "../src/images/validation";
+import { getDefaultArticle } from "../src/super-page/data";
+import { buildGeneratedProject } from "../src/workflow/generateProject";
 import type { SuperPage } from "../src/super-page/types";
 
 interface QualityCase {
@@ -123,44 +125,82 @@ function validateGeneratedReports(): number {
   return (errors.length === 0 ? 0 : 1) + (negativePassed ? 0 : 1);
 }
 
-const root = join(process.cwd(), "content", "articles");
-const slugs = readdirSync(root, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
-
-function expectedForSlug(slug: string): "pass" | "fail" {
-  return slug.startsWith("negative-") ? "fail" : "pass";
+async function validateWorkflowTopicCases(): Promise<number> {
+  const cases = [
+    { id: "long-tail", topic: "best AI SEO content workflow for multilingual ecommerce category pages with realistic product images and strict quality gates" },
+    { id: "zh-keyword", topic: "北京开芯院 SEO 内容工作流" },
+    { id: "ja-keyword", topic: "東京のSEO記事生成ワークフロー" },
+  ];
+  const slugs = new Set<string>();
+  let failures = 0;
+  for (const item of cases) {
+    const errors: string[] = [];
+    try {
+      const { article } = await buildGeneratedProject(getDefaultArticle(), item.topic);
+      const schema = validateSuperPage(article);
+      if (!schema.valid) errors.push(...schema.errors);
+      if (article.metadata.title.length > 70) errors.push(`metadata.title length ${article.metadata.title.length} exceeds 70`);
+      if (article.metadata.description.length > 170) errors.push(`metadata.description length ${article.metadata.description.length} exceeds 170`);
+      if (article.slug.endsWith("untitled-topic")) errors.push("slug collapsed to untitled-topic");
+      if (slugs.has(article.slug)) errors.push(`duplicate generated slug ${article.slug}`);
+      slugs.add(article.slug);
+      console.log(`${errors.length === 0 ? "PASS" : "FAIL"} workflow-topic:${item.id} expected=pass slug=${article.slug} titleLength=${article.metadata.title.length} descriptionLength=${article.metadata.description.length}`);
+    } catch (error) {
+      errors.push(error instanceof Error ? error.message : String(error));
+      console.log(`FAIL workflow-topic:${item.id} expected=pass`);
+    }
+    for (const error of errors) console.log(`  - ${error}`);
+    if (errors.length > 0) failures += 1;
+  }
+  return failures;
 }
 
-function readJson(slug: string): unknown {
-  return JSON.parse(readFileSync(join(root, slug, "article.json"), "utf8"));
+async function main() {
+  const root = join(process.cwd(), "content", "articles");
+  const slugs = readdirSync(root, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+
+  function expectedForSlug(slug: string): "pass" | "fail" {
+    return slug.startsWith("negative-") ? "fail" : "pass";
+  }
+
+  function readJson(slug: string): unknown {
+    return JSON.parse(readFileSync(join(root, slug, "article.json"), "utf8"));
+  }
+
+  const validPages: SuperPage[] = [];
+  const results: CaseResult[] = slugs.map((slug) => {
+    const value = readJson(slug);
+    const result = validateSuperPage(value);
+    const expected = expectedForSlug(slug);
+    const passed = expected === "pass" ? result.valid : !result.valid;
+    if (expected === "pass" && result.valid) validPages.push(assertSuperPage(value));
+    return { slug, expected, passed, errors: result.errors };
+  });
+
+  for (const result of results) {
+    console.log(`${result.passed ? "PASS" : "FAIL"} ${result.slug} expected=${result.expected}`);
+    for (const error of result.errors.slice(0, 8)) console.log(`  - ${error}`);
+  }
+
+  const seo = validateSeoReadiness(validPages);
+  for (const warning of seo.warnings) console.log(`WARN ${warning}`);
+  for (const error of seo.errors) console.log(`SEO-FAIL ${error}`);
+
+  const qualityFailures = validateQualityCases();
+  const seoNegativeFailures = validateSeoNegativeCases(validPages);
+  const imageNegativeFailures = validateImageNegativeCases(validPages);
+  const generatedReportFailures = validateGeneratedReports();
+  const workflowTopicFailures = await validateWorkflowTopicCases();
+  const failed = results.filter((result) => !result.passed);
+  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || imageNegativeFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
+    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${imageNegativeFailures} image negative case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
+    process.exit(1);
+  }
+
+  console.log(`Content validation passed for ${results.length} schema case(s), including quality, image, generated-report, workflow-topic, and SEO negative checks.`);
 }
 
-const validPages: SuperPage[] = [];
-const results: CaseResult[] = slugs.map((slug) => {
-  const value = readJson(slug);
-  const result = validateSuperPage(value);
-  const expected = expectedForSlug(slug);
-  const passed = expected === "pass" ? result.valid : !result.valid;
-  if (expected === "pass" && result.valid) validPages.push(assertSuperPage(value));
-  return { slug, expected, passed, errors: result.errors };
-});
-
-for (const result of results) {
-  console.log(`${result.passed ? "PASS" : "FAIL"} ${result.slug} expected=${result.expected}`);
-  for (const error of result.errors.slice(0, 8)) console.log(`  - ${error}`);
-}
-
-const seo = validateSeoReadiness(validPages);
-for (const warning of seo.warnings) console.log(`WARN ${warning}`);
-for (const error of seo.errors) console.log(`SEO-FAIL ${error}`);
-
-const qualityFailures = validateQualityCases();
-const seoNegativeFailures = validateSeoNegativeCases(validPages);
-const imageNegativeFailures = validateImageNegativeCases(validPages);
-const generatedReportFailures = validateGeneratedReports();
-const failed = results.filter((result) => !result.passed);
-if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || imageNegativeFailures > 0 || generatedReportFailures > 0) {
-  console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${imageNegativeFailures} image negative case(s), and ${generatedReportFailures} generated-report case(s).`);
+main().catch((error) => {
+  console.error(error);
   process.exit(1);
-}
-
-console.log(`Content validation passed for ${results.length} schema case(s), including quality, image, generated-report, and SEO negative checks.`);
+});
