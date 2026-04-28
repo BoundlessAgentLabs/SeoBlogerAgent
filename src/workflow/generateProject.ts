@@ -100,6 +100,11 @@ function topicArticleFromTemplate(template: SuperPage, input: WorkflowProjectInp
   article.metadata.canonicalUrl = canonicalUrl;
   article.metadata.openGraph.title = article.metadata.title;
   article.metadata.openGraph.description = article.metadata.description;
+  article.breadcrumbs = [
+    { name: "Home", href: "/" },
+    { name: "Articles", href: "/articles" },
+    { name: article.metadata.title, href: `/articles/${slug}` },
+  ];
   article.hero.headline = `Build a Super Page for ${topicTitle}`;
   article.hero.answer = `This persisted workflow turns ${topicText} into a structured Super Page plan with generated sections, image prompts, quality checks, and operator instructions: ${instructionSummary}.`;
   article.hero.summaryBullets = [

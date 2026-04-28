@@ -17,6 +17,14 @@ function formatError(error: ErrorObject): string {
   return `${path} ${error.message ?? "is invalid"}`;
 }
 
+function canonicalPath(value: string): string {
+  try {
+    return new URL(value).pathname;
+  } catch {
+    return value.startsWith("/") ? value : `/${value}`;
+  }
+}
+
 export function validateSuperPage(value: unknown): ValidationResult {
   const valid = validateSchema(value);
   const schemaErrors = valid ? [] : (validateSchema.errors ?? []).map(formatError);
@@ -52,6 +60,22 @@ export function validateSuperPage(value: unknown): ValidationResult {
     }
     if (!slot.caption.trim() || slot.caption.trim().length < 18) {
       semanticErrors.push(`/imageSlots/${slot.id}/caption must be descriptive`);
+    }
+  }
+
+  const finalBreadcrumb = page.breadcrumbs.at(-1);
+  const expectedArticlePath = `/articles/${page.slug}`;
+  if (!finalBreadcrumb) {
+    semanticErrors.push("/breadcrumbs must include a current-page item");
+  } else {
+    if (finalBreadcrumb.href !== expectedArticlePath) {
+      semanticErrors.push(`/breadcrumbs/current href must be ${expectedArticlePath}`);
+    }
+    if (canonicalPath(page.metadata.canonicalUrl) !== expectedArticlePath) {
+      semanticErrors.push(`/metadata/canonicalUrl path must be ${expectedArticlePath}`);
+    }
+    if (!finalBreadcrumb.name.trim() || finalBreadcrumb.name !== page.metadata.title) {
+      semanticErrors.push("/breadcrumbs/current name must match metadata.title");
     }
   }
 

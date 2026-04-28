@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "slug": "ai-seo-super-page-generator",
+  "slug": "negative-stale-breadcrumb",
   "brief": {
     "keyword": "AI SEO super page generator",
     "intent": "mixed",
@@ -11,7 +11,7 @@
   "metadata": {
     "title": "AI SEO Super Page Generator: Open Workflow Blueprint",
     "description": "A practical blueprint for generating SEO Super Pages with block-based AI writing, realistic image prompts, quality gates, and transparent metadata.",
-    "canonicalUrl": "https://example.com/articles/ai-seo-super-page-generator",
+    "canonicalUrl": "https://example.com/articles/negative-stale-breadcrumb",
     "updatedAt": "2026-04-28",
     "author": "Boundless Agent Labs",
     "openGraph": {
@@ -402,7 +402,7 @@
       "href": "/articles"
     },
     {
-      "name": "AI SEO Super Page Generator: Open Workflow Blueprint",
+      "name": "AI SEO Super Page Generator",
       "href": "/articles/ai-seo-super-page-generator"
     }
   ],
