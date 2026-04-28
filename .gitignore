@@ -1,0 +1,41 @@
+# dependencies
+node_modules/
+.pnpm-store/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# local env and secrets
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+*.pem
+*.key
+
+# Codex/OpenAI auth copies and local experiments
+CodexImagen2API/
+authens/
+**/authens/
+**/auth_state.json
+**/logs/
+**/data/*.sqlite3
+
+# build outputs
+.next/
+out/
+dist/
+build/
+coverage/
+
+# generated media / scratch
+output/
+tmp/
+*.log
+.DS_Store
+
+# editor
+.vscode/
+.idea/
