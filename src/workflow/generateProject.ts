@@ -15,6 +15,14 @@ export interface WorkflowAuditEvent {
   message: string;
 }
 
+export interface WorkflowProjectInput {
+  topic: string;
+  customerAction?: string;
+  targetLocation?: string;
+  brandVoice?: string;
+  imageModelPreference?: string;
+}
+
 export interface WorkflowProjectResult {
   slug: string;
   directory: string;
@@ -64,22 +72,36 @@ function titleCase(input: string) {
   return input.replace(/\w\S*/g, (word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`);
 }
 
-function topicArticleFromTemplate(template: SuperPage, topic: string): SuperPage {
-  const topicText = topic.trim() || template.brief.keyword;
+function normalizeWorkflowInput(input: string | WorkflowProjectInput): WorkflowProjectInput {
+  return typeof input === "string" ? { topic: input } : input;
+}
+
+function workflowInstructionSummary(input: WorkflowProjectInput) {
+  return [
+    input.customerAction ? `Desired action: ${input.customerAction}` : "Desired action: review and improve the page before publishing",
+    input.targetLocation ? `Target location: ${input.targetLocation}` : "Target location: global/default",
+    input.brandVoice ? `Brand voice: ${input.brandVoice}` : "Brand voice: helpful expert",
+    input.imageModelPreference ? `Image model: ${input.imageModelPreference}` : "Image model: default mock/live adapter",
+  ].join("; ");
+}
+
+function topicArticleFromTemplate(template: SuperPage, input: WorkflowProjectInput): SuperPage {
+  const topicText = input.topic.trim() || template.brief.keyword;
+  const instructionSummary = workflowInstructionSummary(input);
   const topicTitle = titleCase(topicText);
   const slug = `generated-${slugifyTopic(topicText)}`;
   const canonicalUrl = `https://example.com/articles/${slug}`;
   const article = JSON.parse(JSON.stringify(template)) as SuperPage;
   article.slug = slug;
   article.brief.keyword = topicText;
-  article.brief.angle = `Open, inspectable Super Page workflow for ${topicText}`;
+  article.brief.angle = `Open, inspectable Super Page workflow for ${topicText}. ${instructionSummary}`;
   article.metadata.title = `${topicTitle}: Inspectable SEO Super Page Workflow`;
   article.metadata.description = `A generated Super Page workflow for ${topicText} with structure, block rewrites, image prompts, and quality checks.`;
   article.metadata.canonicalUrl = canonicalUrl;
   article.metadata.openGraph.title = article.metadata.title;
   article.metadata.openGraph.description = article.metadata.description;
   article.hero.headline = `Build a Super Page for ${topicTitle}`;
-  article.hero.answer = `This persisted workflow turns ${topicText} into a structured Super Page plan with generated sections, image prompts, and quality checks.`;
+  article.hero.answer = `This persisted workflow turns ${topicText} into a structured Super Page plan with generated sections, image prompts, quality checks, and operator instructions: ${instructionSummary}.`;
   article.hero.summaryBullets = [
     `Topic-specific structure for ${topicText}`,
     "Section rewrites stay linked to source notes and constraints",
@@ -92,7 +114,7 @@ function topicArticleFromTemplate(template: SuperPage, topic: string): SuperPage
     heading: index === 0 ? `Structure the ${topicTitle} Super Page` : section.heading.replace("AI SEO", topicTitle),
     searchIntent: index === 0 ? `Understand what a useful ${topicText} Super Page should cover before drafting.` : section.searchIntent.replace("AI SEO", topicTitle),
     summaryClaim: section.summaryClaim.replace("AI SEO", topicTitle).replace("Super Page", `${topicTitle} Super Page`),
-    sourceNotes: section.sourceNotes.map((note) => ({ ...note, note: `${note.note} Applied to the submitted topic: ${topicText}.` })),
+    sourceNotes: section.sourceNotes.map((note) => ({ ...note, note: `${note.note} Applied to the submitted topic: ${topicText}. ${instructionSummary}.` })),
     qualityNotes: [`Waiting for persisted generation for ${topicText}.`],
   }));
   article.toc = article.sections.map((section) => ({ id: section.id, label: section.heading }));
@@ -103,7 +125,7 @@ function topicArticleFromTemplate(template: SuperPage, topic: string): SuperPage
     assetPath: `/mock-images/${slot.id}.svg`,
     prompt: {
       ...slot.prompt,
-      context: `${slot.prompt.context}. Topic: ${topicText}.`,
+      context: `${slot.prompt.context}. Topic: ${topicText}. ${instructionSummary}.`,
     },
     qa: {
       ...slot.qa,
@@ -117,9 +139,10 @@ function assertValidResponse(label: string, response: { validation: { valid: boo
   if (!response.validation.valid) throw new Error(`${label} failed output validation:\n${response.validation.errors.join("\n")}`);
 }
 
-export async function buildGeneratedProject(template: SuperPage, topic: string): Promise<{ article: SuperPage; outline: Awaited<ReturnType<typeof generateWithModel<OutlineOutput>>>; sectionLogs: SectionLog[]; imageMetadata: Awaited<ReturnType<typeof generateMockImage>>[]; qualityReport: unknown; events: WorkflowAuditEvent[] }> {
-  const events = [event("system", `Started persisted workflow for topic: ${topic}`)];
-  const article = topicArticleFromTemplate(template, topic);
+export async function buildGeneratedProject(template: SuperPage, workflowInput: string | WorkflowProjectInput): Promise<{ article: SuperPage; outline: Awaited<ReturnType<typeof generateWithModel<OutlineOutput>>>; sectionLogs: SectionLog[]; imageMetadata: Awaited<ReturnType<typeof generateMockImage>>[]; qualityReport: unknown; events: WorkflowAuditEvent[] }> {
+  const input = normalizeWorkflowInput(workflowInput);
+  const events = [event("system", `Started persisted workflow for topic: ${input.topic}`)];
+  const article = topicArticleFromTemplate(template, input);
   const outlinePrompt = promptForPage("outline", article);
   const outline = await generateWithModel<OutlineOutput>({
     task: "outline",
@@ -184,8 +207,8 @@ export async function buildGeneratedProject(template: SuperPage, topic: string):
   return { article, outline, sectionLogs, imageMetadata, qualityReport, events };
 }
 
-export async function generateWorkflowProject(topic: string, template: SuperPage): Promise<WorkflowProjectResult> {
-  const { article, outline, sectionLogs, imageMetadata, qualityReport, events } = await buildGeneratedProject(template, topic);
+export async function generateWorkflowProject(workflowInput: string | WorkflowProjectInput, template: SuperPage): Promise<WorkflowProjectResult> {
+  const { article, outline, sectionLogs, imageMetadata, qualityReport, events } = await buildGeneratedProject(template, workflowInput);
   const directory = article.slug;
   const root = join(process.cwd(), "content", "articles", directory);
   const generatedDir = join(root, "generated");

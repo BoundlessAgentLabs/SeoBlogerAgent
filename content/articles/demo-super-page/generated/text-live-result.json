@@ -10,71 +10,83 @@
     "provider": "deepseek",
     "model": "deepseek-v4-pro",
     "validation": {
-      "valid": true,
-      "errors": []
+      "valid": false,
+      "errors": [
+        "/sections length 12 does not match expected Super Page section count 4",
+        "/sections/0/id must be structure-first for this Super Page contract, got introduction",
+        "/sections/1/id must be block-rewriting for this Super Page contract, got black-box-problem",
+        "/sections/2/id must be image-quality for this Super Page contract, got transparent-principles",
+        "/sections/3/id must be quality-gates for this Super Page contract, got stage-structure"
+      ]
     },
-    "warnings": [],
+    "warnings": [
+      "/sections length 12 does not match expected Super Page section count 4",
+      "/sections/0/id must be structure-first for this Super Page contract, got introduction",
+      "/sections/1/id must be block-rewriting for this Super Page contract, got black-box-problem",
+      "/sections/2/id must be image-quality for this Super Page contract, got transparent-principles",
+      "/sections/3/id must be quality-gates for this Super Page contract, got stage-structure"
+    ],
     "output": {
       "sections": [
         {
           "id": "introduction",
           "heading": "What Is an AI SEO Super Page Generator?",
-          "searchIntent": "Informational: understand the concept and benefits of AI super pages"
+          "searchIntent": "Understanding the concept of an AI-powered Super Page generator for SEO and how it differs from traditional one-click tools."
         },
         {
-          "id": "problem-blackbox",
-          "heading": "Why Black-Box AI Content Generators Fail SEO",
-          "searchIntent": "Informational: learn about the limitations of opaque AI writing tools"
+          "id": "black-box-problem",
+          "heading": "The Problem with Black-Box AI Writing Tools",
+          "searchIntent": "Identifying common pitfalls of opaque AI content generation, such as generic output, lack of control, and SEO risks."
         },
         {
-          "id": "transparent-pipeline",
-          "heading": "Introducing the Transparent Super Page Pipeline",
-          "searchIntent": "Informational: discover a modular, open-source approach to AI content creation"
+          "id": "transparent-principles",
+          "heading": "Core Principles of a Transparent AI SEO Pipeline",
+          "searchIntent": "Learning the key design principles: modularity, explainability, and human oversight in AI-assisted content creation."
         },
         {
-          "id": "structure-research",
-          "heading": "Step 1: Automated Structure and SERP Research",
-          "searchIntent": "Informational: how to generate SEO-driven outlines using AI and SERP data"
+          "id": "stage-structure",
+          "heading": "Stage 1: Outline & Structure Generation",
+          "searchIntent": "Exploring how to use AI to create a content brief, headings, and SERP-intent-aligned structure before writing."
         },
         {
-          "id": "rewriting-expansion",
-          "heading": "Step 2: AI Content Rewriting and Fact Expansion",
-          "searchIntent": "Informational: learn rewriting techniques that preserve accuracy while improving depth"
+          "id": "stage-rewriting",
+          "heading": "Stage 2: Content Rewriting & Expansion",
+          "searchIntent": "Using open-weight LLMs to expand sections, maintain factual accuracy, and adapt tone without black-box prompts."
         },
         {
-          "id": "image-generation",
-          "heading": "Step 3: Integrating AI Image Generation",
-          "searchIntent": "Informational: how to create and embed visuals using open-source models"
+          "id": "stage-images",
+          "heading": "Stage 3: AI Image Generation for SEO",
+          "searchIntent": "Integrating open-source image models to create unique, alt-text-ready visuals that reinforce topical authority."
         },
         {
-          "id": "quality-review",
-          "heading": "Step 4: Quality Review and Human Oversight",
-          "searchIntent": "Informational: ensuring content quality with review checkpoints"
+          "id": "stage-review",
+          "heading": "Stage 4: Quality Review & Human-in-the-Loop",
+          "searchIntent": "Implementing automated checks and manual review workflows to ensure EEAT, factual correctness, and brand voice."
         },
         {
-          "id": "open-source-tools",
-          "heading": "Technical Architecture: Open-Source Tools You Can Customize",
-          "searchIntent": "Commercial: evaluate tools and frameworks for building your own transparent generator"
+          "id": "open-source-toolstack",
+          "heading": "Open-Source Tool Stack for Each Stage",
+          "searchIntent": "Evaluating specific open-source tools (e.g., LangChain, Stable Diffusion, LlamaIndex) for each pipeline stage."
+        },
+        {
+          "id": "workflow-integration",
+          "heading": "Workflow Integration & Automation",
+          "searchIntent": "Combining the modular stages into a cohesive, semi-automated Super Page production line using APIs and scripts."
         },
         {
           "id": "case-study",
-          "heading": "Case Study: Building a Super Page from Scratch",
-          "searchIntent": "Informational: see a real-world example of the pipeline in action"
+          "heading": "Case Study: Building a Super Page with This Pipeline",
+          "searchIntent": "Seeing a real-world example of an affiliate site that improved rankings and traffic using the transparent approach."
         },
         {
-          "id": "comparison",
-          "heading": "How It Compares to Other AI SEO Tools",
-          "searchIntent": "Commercial: compare transparency, features, and cost"
-        },
-        {
-          "id": "best-practices",
-          "heading": "Best Practices for AI-Assisted Super Pages",
-          "searchIntent": "Informational: actionable tips for SEO success with AI content"
+          "id": "limitations-best-practices",
+          "heading": "Limitations & Best Practices",
+          "searchIntent": "Understanding the current constraints of open-source AI and how to avoid over-optimization, hallucinations, and thin content."
         },
         {
           "id": "conclusion",
-          "heading": "Conclusion: Start Building Transparent AI Content",
-          "searchIntent": "Transactional: begin implementing your own open-source AI writing workflow"
+          "heading": "The Future of Transparent AI SEO",
+          "searchIntent": "Forecasting how modular, open-source pipelines will evolve and their impact on SEO content creation."
         }
       ]
     }
@@ -90,17 +102,17 @@
     "warnings": [],
     "output": {
       "paragraphs": [
-        "A Super Page schema acts as an inspectable blueprint before drafting, preventing the unstructured text dumps common in long-form SEO posts. By defining required blocks—such as a decision table, caveats per option, and a final recommendation checklist for a software comparison page—writers and editors can verify that each section addresses a specific user need. This aligns with Google’s people-first guidance to provide original value and satisfying explanations, not search-first filler.",
-        "Without a schema, it’s easy to produce a keyword-stuffed wall of text that lacks clear purpose. When editors can inspect independent blocks, they can identify and retry weak sections, unsupported claims, or image gaps without overhauling the entire page. The schema should guide quality by requiring meaningful components, but it must avoid imposing a rigid layout that makes every page feel identical. This balance ensures each Super Page is both structurally sound and genuinely helpful."
+        "Designing a Super Page begins with a schema that defines the page’s structure before writing. Unlike a typical long-form blog post that can turn into an unstructured wall of text, a schema makes the content inspectable—editors can quickly spot unsupported claims, weak explanations, and missing elements. This approach aligns with Google’s people-first guidelines, which demand original value and clear organization instead of keyword-stuffed filler. For the reader, the benefit is a page that directly satisfies their intent without forcing them to hunt through fluff.",
+        "For example, a software comparison page built on a schema might require a decision table, best-for labels, clear caveats, and a recommendation checklist. This breaks the content into reusable, independently verifiable blocks. However, a practical caveat: the schema should guide quality, not force every keyword topic into an identical rigid layout; different queries demand different structures. By making the page inspectable, editors can retry weak sections—like a thin recommendation or a poor image choice—without reworking the entire article, saving time and raising overall quality."
       ],
       "examples": [
-        "For a software comparison Super Page, the schema might require an upfront decision table with criteria columns, ‘Best for’ labels on each tool, a dedicated caveats section per alternative, and a final recommendation checklist that ties back to user needs."
+        "For a software comparison page, the schema can require a decision table, best-for labels, caveats, and a final recommendation checklist."
       ],
       "caveats": [
-        "The schema is a quality guardrail, not a mandatory template. Forcing every keyword into the exact same block layout can make content feel formulaic and overlook the unique angle a topic deserves."
+        "The schema should guide quality without forcing every keyword into the same rigid layout."
       ],
       "qualityNotes": [
-        "A schema reframes SEO writing from word-count targeting to need-based structuring, helping creators produce inspectable, purpose-built content that meets the intent of Google's people-first guidelines without resorting to filler."
+        "Inspectable schemas enable editors to isolate and improve weak sections independently, ensuring each block meets user needs without destabilizing the whole page."
       ]
     }
   }

@@ -2,12 +2,12 @@
 
 import { useMemo, useState, useTransition } from "react";
 import type { QualityStatus, SuperPage } from "@/super-page/types";
-import type { WorkflowProjectResult } from "@/workflow/generateProject";
+import type { WorkflowProjectInput, WorkflowProjectResult } from "@/workflow/generateProject";
 
 type StepState = "idle" | "running" | "done" | "blocked";
 type EventPhase = "structure" | "blocks" | "images" | "system";
 
-type GenerateProjectAction = (topic: string) => Promise<WorkflowProjectResult>;
+type GenerateProjectAction = (input: WorkflowProjectInput) => Promise<WorkflowProjectResult>;
 
 interface AuditEvent {
   time: string;
@@ -39,6 +39,10 @@ function statusLabel(status: QualityStatus) {
 export function AuthoringWorkflow({ page, generateProject }: { page: SuperPage; generateProject: GenerateProjectAction }) {
   const fixtureId = `${page.slug}@${page.schemaVersion}`;
   const [topic, setTopic] = useState(page.brief.keyword);
+  const [customerAction, setCustomerAction] = useState("Review and publish a helpful page");
+  const [targetLocation, setTargetLocation] = useState("United States");
+  const [brandVoice, setBrandVoice] = useState("Helpful expert, low-hype");
+  const [imageModelPreference, setImageModelPreference] = useState("GPT Image / CodexImagen2API when live");
   const [structureState, setStructureState] = useState<StepState>("idle");
   const [blockState, setBlockState] = useState<StepState>("idle");
   const [imageState, setImageState] = useState<StepState>("idle");
@@ -86,7 +90,7 @@ export function AuthoringWorkflow({ page, generateProject }: { page: SuperPage; 
     log("structure", `Submitting topic to persisted workflow action: ${topic}`);
     startTransition(async () => {
       try {
-        const result = await generateProject(topic);
+        const result = await generateProject({ topic, customerAction, targetLocation, brandVoice, imageModelPreference });
         applyWorkflowResult(result);
         setStructureState("done");
         log("structure", `Persisted ${result.article.sections.length} generated sections for ${result.slug}.`);
@@ -154,6 +158,20 @@ export function AuthoringWorkflow({ page, generateProject }: { page: SuperPage; 
             <h2 className="text-xl font-semibold text-ink">1. Topic input</h2>
             <label className="mt-5 block text-sm font-medium text-slate-700" htmlFor="topic">Keyword or topic</label>
             <input id="topic" value={topic} onChange={(event) => setTopic(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 text-ink" />
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <label className="text-sm font-medium text-slate-700" htmlFor="customerAction">Desired action / CTA
+                <input id="customerAction" value={customerAction} onChange={(event) => setCustomerAction(event.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-ink" />
+              </label>
+              <label className="text-sm font-medium text-slate-700" htmlFor="targetLocation">Target location
+                <input id="targetLocation" value={targetLocation} onChange={(event) => setTargetLocation(event.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-ink" />
+              </label>
+              <label className="text-sm font-medium text-slate-700" htmlFor="brandVoice">Brand voice
+                <input id="brandVoice" value={brandVoice} onChange={(event) => setBrandVoice(event.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-ink" />
+              </label>
+              <label className="text-sm font-medium text-slate-700" htmlFor="imageModelPreference">Image model preference
+                <input id="imageModelPreference" value={imageModelPreference} onChange={(event) => setImageModelPreference(event.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-ink" />
+              </label>
+            </div>
             <button type="button" onClick={generateStructure} disabled={isPending || topic.trim().length < 3} className="mt-4 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-400">Persist generated project</button>
             {error ? <p className="mt-3 border-l-4 border-red-500 bg-red-50 p-3 text-sm text-red-800">{error}</p> : null}
             <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-muted">

@@ -5,7 +5,7 @@
     "keyword": "open source SEO content workflow",
     "intent": "mixed",
     "audience": "SEO operators, affiliate site builders, and developers evaluating open-source AI writing workflows",
-    "angle": "Open, inspectable Super Page workflow for open source SEO content workflow",
+    "angle": "Open, inspectable Super Page workflow for open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter",
     "sourceModel": "mock-codex5.5pro"
   },
   "metadata": {
@@ -22,7 +22,7 @@
   },
   "hero": {
     "headline": "Build a Super Page for Open Source SEO Content Workflow",
-    "answer": "This persisted workflow turns open source SEO content workflow into a structured Super Page plan with generated sections, image prompts, and quality checks.",
+    "answer": "This persisted workflow turns open source SEO content workflow into a structured Super Page plan with generated sections, image prompts, quality checks, and operator instructions: Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
     "summaryBullets": [
       "Topic-specific structure for open source SEO content workflow",
       "Section rewrites stay linked to source notes and constraints",
@@ -56,7 +56,7 @@
       "searchIntent": "Understand what a useful open source SEO content workflow Super Page should cover before drafting.",
       "summaryClaim": "A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text.",
       "paragraphs": [
-        "A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. This rewrite stays focused on understand what a useful open source seo content workflow super page should cover before drafting. while adding specific example, practical caveat, reader benefit.",
+        "A schema makes the page inspectable and prevents the writer from producing an unstructured wall of SEO text. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter. This rewrite stays focused on understand what a useful open source seo content workflow super page should cover before drafting. while adding specific example, practical caveat, reader benefit.",
         "For implementation, the editor sees why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
       ],
       "examples": [
@@ -72,12 +72,12 @@
       "sourceNotes": [
         {
           "label": "Google people-first baseline",
-          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow.",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
           "sourceType": "research"
         },
         {
           "label": "Product workflow assumption",
-          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow.",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
           "sourceType": "assumption"
         }
       ],
@@ -103,7 +103,7 @@
       "searchIntent": "The reader wants a practical way to make AI content feel less generic.",
       "summaryClaim": "Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence.",
       "paragraphs": [
-        "Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. This rewrite stays focused on the reader wants a practical way to make ai content feel less generic. while adding specific example, practical caveat, reader benefit.",
+        "Independent block rewriting makes it easier to add examples, caveats, and source notes without repeating the same AI cadence. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter. This rewrite stays focused on the reader wants a practical way to make ai content feel less generic. while adding specific example, practical caveat, reader benefit.",
         "For implementation, the editor sees why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
       ],
       "examples": [
@@ -119,12 +119,12 @@
       "sourceNotes": [
         {
           "label": "Google people-first baseline",
-          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow.",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
           "sourceType": "research"
         },
         {
           "label": "Product workflow assumption",
-          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow.",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
           "sourceType": "assumption"
         }
       ],
@@ -150,7 +150,7 @@
       "searchIntent": "The reader wants to know how image prompts can improve SEO content quality and user trust.",
       "summaryClaim": "Article images should explain the topic or demonstrate a workflow, not merely decorate the page.",
       "paragraphs": [
-        "Article images should explain the topic or demonstrate a workflow, not merely decorate the page. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. This rewrite stays focused on the reader wants to know how image prompts can improve seo content quality and user trust. while adding specific example, practical caveat, reader benefit.",
+        "Article images should explain the topic or demonstrate a workflow, not merely decorate the page. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter. This rewrite stays focused on the reader wants to know how image prompts can improve seo content quality and user trust. while adding specific example, practical caveat, reader benefit.",
         "For implementation, the editor sees why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
       ],
       "examples": [
@@ -166,12 +166,12 @@
       "sourceNotes": [
         {
           "label": "Google people-first baseline",
-          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow.",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
           "sourceType": "research"
         },
         {
           "label": "Product workflow assumption",
-          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow.",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
           "sourceType": "assumption"
         }
       ],
@@ -197,7 +197,7 @@
       "searchIntent": "The reader wants assurance that AI output will not be published blindly.",
       "summaryClaim": "Visible quality gates make the tool more trustworthy for both developers and editors.",
       "paragraphs": [
-        "Visible quality gates make the tool more trustworthy for both developers and editors. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. This rewrite stays focused on the reader wants assurance that ai output will not be published blindly. while adding specific example, practical caveat, reader benefit.",
+        "Visible quality gates make the tool more trustworthy for both developers and editors. Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter. This rewrite stays focused on the reader wants assurance that ai output will not be published blindly. while adding specific example, practical caveat, reader benefit.",
         "For implementation, the editor sees why this block exists, which claims are grounded, and which caveats remain. This keeps retries local to the section instead of regenerating the entire article."
       ],
       "examples": [
@@ -213,12 +213,12 @@
       "sourceNotes": [
         {
           "label": "Google people-first baseline",
-          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow.",
+          "note": "Useful SEO pages should add original value, clear structure, and satisfying explanations instead of search-first filler. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
           "sourceType": "research"
         },
         {
           "label": "Product workflow assumption",
-          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow.",
+          "note": "Editors need inspectable blocks so weak sections, unsupported claims, and image issues can be retried independently. Applied to the submitted topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
           "sourceType": "assumption"
         }
       ],
@@ -272,7 +272,7 @@
       "purpose": "Explain the end-to-end Super Page generation workflow visually.",
       "prompt": {
         "subject": "Editorial workspace showing structured SEO article planning on a large monitor",
-        "context": "A realistic content strategist desk with notes, page outline cards, and image prompt checklist. Topic: open source SEO content workflow.",
+        "context": "A realistic content strategist desk with notes, page outline cards, and image prompt checklist. Topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
         "composition": "Wide hero image with the workspace centered and calm negative space for headline overlay",
         "realismConstraints": [
           "natural screen glow",
@@ -304,7 +304,7 @@
       "purpose": "Show section-by-section rewriting with visible intent and caveat fields.",
       "prompt": {
         "subject": "A focused editor reviewing paragraph blocks and quality notes",
-        "context": "Realistic laptop and printed editorial checklist in a quiet office. Topic: open source SEO content workflow.",
+        "context": "Realistic laptop and printed editorial checklist in a quiet office. Topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
         "composition": "Over-the-shoulder view with no readable proprietary interface text",
         "realismConstraints": [
           "natural posture",
@@ -335,7 +335,7 @@
       "purpose": "Demonstrate image prompt variants and regeneration status.",
       "prompt": {
         "subject": "Article image gallery with prompt version cards and QA badges",
-        "context": "Clean web application interface represented as abstract blocks without readable text. Topic: open source SEO content workflow.",
+        "context": "Clean web application interface represented as abstract blocks without readable text. Topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
         "composition": "Three image cards in a grid with subtle quality badges and prompt metadata",
         "realismConstraints": [
           "consistent lighting",
@@ -366,7 +366,7 @@
       "purpose": "Visualize publish readiness checks before an article goes live.",
       "prompt": {
         "subject": "Quality report checklist for SEO article readiness",
-        "context": "Minimal editorial dashboard with pass, warning, and fail states represented by shapes. Topic: open source SEO content workflow.",
+        "context": "Minimal editorial dashboard with pass, warning, and fail states represented by shapes. Topic: open source SEO content workflow. Desired action: review and improve the page before publishing; Target location: global/default; Brand voice: helpful expert; Image model: default mock/live adapter.",
         "composition": "Vertical checklist diagram with clear hierarchy and no tiny text",
         "realismConstraints": [
           "clean diagram layout",

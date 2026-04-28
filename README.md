@@ -36,6 +36,7 @@ The current MVP includes a working Next.js App Router foundation:
 npm install
 npm run validate:content
 npm run generate:mock
+npm run generate:workflow -- --topic "open source SEO content workflow"
 npm run build
 npm run dev
 ```
@@ -78,6 +79,16 @@ content/articles/demo-super-page/generated/image-metadata.json
 content/articles/demo-super-page/generated/quality-report.json
 content/articles/demo-super-page/generated/image-live-attempts.json
 ```
+
+### Persisted workflow generation
+
+This writes a topic-specific project under `content/articles/generated-<topic-slug>/` and makes it renderable through `/articles/<slug>` and `/workflow/preview/<slug>`:
+
+```bash
+npm run generate:workflow -- --topic "open source SEO content workflow"
+```
+
+The web UI calls the same persisted workflow path from `app/workflow/actions.ts`.
 
 ### Live text generation
 
@@ -157,6 +168,7 @@ Only variable names are documented. Secret values are not stored in this reposit
 - `docs/architecture/initial-architecture.md` — initial system architecture.
 - `docs/ui/kimi-consult-brief.md` — future UI design consultation brief.
 - `docs/ui/kimi-review-log.md` — Kimi CLI UI review attempts and applied UI critique.
+- `docs/research/competitor-workflow-observations.md` — Credential-safe public workflow observations and boundaries.
 - `docs/operations/humanize.md` — Humanize install, RLCR, and side-work operations.
 
 ## Safety Notes

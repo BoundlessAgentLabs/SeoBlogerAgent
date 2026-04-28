@@ -31,9 +31,9 @@
     }
   },
   "providerResponse": {
-    "id": "chatcmpl-18518496bb16496982e0c0cb0bd4695b",
+    "id": "chatcmpl-68522413455c48daba0eab6d8a6b3a56",
     "model": "gpt-4o-image",
-    "created": 1777388474,
+    "created": 1777390978,
     "finishReason": "stop",
     "usage": {
       "prompt_tokens": 0,
@@ -42,7 +42,7 @@
     },
     "imageSource": "data-url",
     "mimeType": "image/png",
-    "bytes": 2106831
+    "bytes": 1824766
   },
   "regenerationRecommended": false
 }
