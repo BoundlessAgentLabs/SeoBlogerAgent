@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { generateWithModel, promptForPage, promptForSection } from "../src/models/gateway";
 import type { OutlineOutput, ReviewOutput, SectionRewriteOutput } from "../src/models/validation";
 import { imagePromptRecord } from "../src/images/prompt";
-import { generateLiveImageAttempt, generateMockImage } from "../src/images/adapter";
+import { generateMockImage } from "../src/images/adapter";
 import { getDefaultArticle } from "../src/super-page/data";
 import { validateSeoReadiness } from "../src/seo/validation";
 import { reviewPageContentQuality, reviewSectionQuality, qualityStatusFromIssues } from "../src/quality/content";
@@ -97,7 +97,14 @@ async function main() {
   for (const slot of generatedPage.imageSlots) {
     const record = imagePromptRecord(slot);
     imageMetadata.push(await generateMockImage({ articleSlug: generatedPage.slug, prompt: record }));
-    liveAttempts.push(await generateLiveImageAttempt({ articleSlug: generatedPage.slug, prompt: record, mode: "live" }));
+    liveAttempts.push({
+      provider: "mock",
+      mode: "blocked",
+      imageSlotId: record.imageSlotId,
+      metadata: record,
+      blocker: "generate:mock does not call live image providers; run npm run generate:image:live for quota-spending image generation.",
+      regenerationRecommended: false,
+    });
   }
 
   const computedContentIssues = reviewPageContentQuality(generatedPage);

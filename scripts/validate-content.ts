@@ -6,7 +6,7 @@ import { SuperPageView } from "../src/components/SuperPageView";
 import { generateWithModel } from "../src/models/gateway";
 import { reviewTextQuality } from "../src/quality/content";
 import { validateSuperPage, assertSuperPage } from "../src/super-page/validation";
-import { articleJsonLd, serializeJsonLd } from "../src/seo/jsonLd";
+import { articleJsonLd, breadcrumbJsonLd, serializeJsonLd } from "../src/seo/jsonLd";
 import { validateSeoReadiness } from "../src/seo/validation";
 import { validateImageReadiness } from "../src/images/validation";
 import { getDefaultArticle } from "../src/super-page/data";
@@ -92,7 +92,13 @@ function validateJsonLdCases(validPages: SuperPage[]): number {
   console.log(`${absoluteImagesPassed ? "PASS" : "FAIL"} jsonld:absolute-image-urls expected=pass`);
   for (const image of images) console.log(`  - ${image}`);
 
-  return (escapedScriptPassed ? 0 : 1) + (absoluteImagesPassed ? 0 : 1);
+  const breadcrumb = breadcrumbJsonLd(validPages[0]);
+  const breadcrumbItems = breadcrumb.itemListElement.map((item) => item.item);
+  const absoluteBreadcrumbsPassed = breadcrumbItems.length > 0 && breadcrumbItems.every((item) => /^https?:\/\//.test(item));
+  console.log(`${absoluteBreadcrumbsPassed ? "PASS" : "FAIL"} jsonld:absolute-breadcrumb-urls expected=pass`);
+  for (const item of breadcrumbItems) console.log(`  - ${item}`);
+
+  return (escapedScriptPassed ? 0 : 1) + (absoluteImagesPassed ? 0 : 1) + (absoluteBreadcrumbsPassed ? 0 : 1);
 }
 
 function validateRenderCases(validPages: SuperPage[]): number {
@@ -173,7 +179,8 @@ function generatedReportHasBlockingIssue(report: GeneratedQualityReport): string
 }
 
 function validateGeneratedReports(): number {
-  const reportPath = join(process.cwd(), "content", "articles", "demo-super-page", "generated", "quality-report.json");
+  const generatedDir = join(process.cwd(), "content", "articles", "demo-super-page", "generated");
+  const reportPath = join(generatedDir, "quality-report.json");
   if (!existsSync(reportPath)) {
     console.log("FAIL generated-report:missing expected=pass");
     return 1;
@@ -192,7 +199,13 @@ function validateGeneratedReports(): number {
   const negativePassed = negativeErrors.length > 0;
   console.log(`${negativePassed ? "PASS" : "FAIL"} generated-report:quality-negative expected=fail`);
   for (const error of negativeErrors) console.log(`  - ${error}`);
-  return (errors.length === 0 ? 0 : 1) + (negativePassed ? 0 : 1);
+
+  const liveAttemptsPath = join(generatedDir, "image-live-attempts.json");
+  const liveAttempts = existsSync(liveAttemptsPath) ? JSON.parse(readFileSync(liveAttemptsPath, "utf8")) as Array<{ mode?: string; blocker?: string }> : [];
+  const mockNoLivePassed = liveAttempts.length > 0 && liveAttempts.every((attempt) => attempt.mode !== "live" && attempt.blocker?.includes("generate:mock does not call live image providers"));
+  console.log(`${mockNoLivePassed ? "PASS" : "FAIL"} generated-report:mock-no-live-image-calls expected=pass`);
+  if (!mockNoLivePassed) console.log("  - image-live-attempts.json should contain deterministic blocked mock records, not live image attempts");
+  return (errors.length === 0 ? 0 : 1) + (negativePassed ? 0 : 1) + (mockNoLivePassed ? 0 : 1);
 }
 
 async function validateWorkflowTopicCases(): Promise<number> {

@@ -37,7 +37,7 @@ export function breadcrumbJsonLd(page: SuperPage) {
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: item.href,
+      item: absoluteUrl(item.href, page.metadata.canonicalUrl),
     })),
   };
 }
