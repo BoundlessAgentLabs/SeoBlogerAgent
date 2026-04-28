@@ -171,6 +171,21 @@ function parseJsonish(rawText: string): unknown {
   }
 }
 
+function bodyFallbackText(data: unknown, bodyText: string) {
+  if (bodyText.trim().length > 0) return bodyText;
+  return data === undefined ? "" : JSON.stringify(data);
+}
+
+async function readProviderBody(response: Response): Promise<{ data: unknown; bodyText: string; warnings: string[] }> {
+  const bodyText = await response.text();
+  if (bodyText.trim().length === 0) return { data: undefined, bodyText, warnings: ["provider response body was empty"] };
+  try {
+    return { data: JSON.parse(bodyText) as unknown, bodyText, warnings: [] };
+  } catch {
+    return { data: undefined, bodyText, warnings: ["provider response body was not JSON"] };
+  }
+}
+
 async function callChatCompletions(route: ModelRoute, sharedRequest: ReturnType<typeof requestFromPrompt>) {
   const response = await fetch(`${route.baseUrl?.replace(/\/$/, "")}/chat/completions`, {
     method: "POST",
@@ -187,9 +202,11 @@ async function callChatCompletions(route: ModelRoute, sharedRequest: ReturnType<
       response_format: { type: "json_object" },
     }),
   });
-  const data = await response.json();
-  const rawText = data?.choices?.[0]?.message?.content ?? JSON.stringify(data);
-  return { response, rawText };
+  const body = await readProviderBody(response);
+  const data = body.data as { choices?: Array<{ message?: { content?: unknown } }> } | undefined;
+  const content = data?.choices?.[0]?.message?.content;
+  const rawText = typeof content === "string" ? content : bodyFallbackText(body.data, body.bodyText);
+  return { response, rawText, bodyWarnings: body.warnings };
 }
 
 async function callGemini(route: ModelRoute, sharedRequest: ReturnType<typeof requestFromPrompt>) {
@@ -202,9 +219,11 @@ async function callGemini(route: ModelRoute, sharedRequest: ReturnType<typeof re
       generationConfig: { responseMimeType: "application/json" },
     }),
   });
-  const data = await response.json();
-  const rawText = data?.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text ?? "").join("") ?? JSON.stringify(data);
-  return { response, rawText };
+  const body = await readProviderBody(response);
+  const data = body.data as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> } | undefined;
+  const candidateText = data?.candidates?.[0]?.content?.parts?.map((part) => part.text ?? "").join("");
+  const rawText = candidateText && candidateText.length > 0 ? candidateText : bodyFallbackText(body.data, body.bodyText);
+  return { response, rawText, bodyWarnings: body.warnings };
 }
 
 export async function generateWithModel<T = unknown>(request: ModelRequest, env: NodeJS.ProcessEnv = process.env): Promise<ModelResponse<T>> {
@@ -246,7 +265,7 @@ export async function generateWithModel<T = unknown>(request: ModelRequest, env:
     };
   }
 
-  const { response, rawText } = route.endpoint === "gemini-generate-content" ? await callGemini(route, sharedRequest) : await callChatCompletions(route, sharedRequest);
+  const { response, rawText, bodyWarnings } = route.endpoint === "gemini-generate-content" ? await callGemini(route, sharedRequest) : await callChatCompletions(route, sharedRequest);
   let parsed: unknown;
   const parseWarnings: string[] = [];
   try {
@@ -256,7 +275,7 @@ export async function generateWithModel<T = unknown>(request: ModelRequest, env:
     parseWarnings.push(error instanceof Error ? error.message : String(error));
   }
   const validation = validateOrThrow(request, parsed);
-  const warnings = [...parseWarnings, ...(response.ok ? [] : [`HTTP ${response.status}`]), ...validation.errors];
+  const warnings = [...bodyWarnings, ...parseWarnings, ...(response.ok ? [] : [`HTTP ${response.status}`]), ...validation.errors];
   return {
     provider: route.provider,
     model: route.model,

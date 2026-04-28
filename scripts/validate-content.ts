@@ -1,5 +1,9 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { SuperPageView } from "../src/components/SuperPageView";
+import { generateWithModel } from "../src/models/gateway";
 import { reviewTextQuality } from "../src/quality/content";
 import { validateSuperPage, assertSuperPage } from "../src/super-page/validation";
 import { articleJsonLd, serializeJsonLd } from "../src/seo/jsonLd";
@@ -89,6 +93,53 @@ function validateJsonLdCases(validPages: SuperPage[]): number {
   for (const image of images) console.log(`  - ${image}`);
 
   return (escapedScriptPassed ? 0 : 1) + (absoluteImagesPassed ? 0 : 1);
+}
+
+function validateRenderCases(validPages: SuperPage[]): number {
+  if (validPages.length === 0) return 1;
+  const page = clonePage(validPages[0]);
+  const sectionImageAlt = page.imageSlots[1]?.alt;
+  for (const slot of page.imageSlots) delete slot.assetPath;
+  const html = renderToStaticMarkup(createElement(SuperPageView, { page }));
+  const noUndefinedSrc = !html.includes('src="undefined"') && !html.includes('src=""');
+  const sectionImageSkipped = sectionImageAlt ? !html.includes(`alt="${sectionImageAlt}"`) : true;
+  const passed = noUndefinedSrc && sectionImageSkipped;
+  console.log(`${passed ? "PASS" : "FAIL"} render:missing-section-image-asset expected=pass`);
+  if (!noUndefinedSrc) console.log("  - rendered HTML contains an empty or undefined image src");
+  if (!sectionImageSkipped) console.log("  - rendered a section image even though its assetPath was absent");
+  return passed ? 0 : 1;
+}
+
+async function validateProviderDiagnosticCases(): Promise<number> {
+  const originalFetch = globalThis.fetch;
+  const cases = [
+    {
+      id: "chat-html-error",
+      env: { AI_PROVIDER: "openai-compatible", AI_BASE_URL: "https://provider.test/v1", AI_API_KEY: "test-key" },
+      response: () => new Response("<html>bad gateway</html>", { status: 502, headers: { "Content-Type": "text/html" } }),
+      expectedWarning: "provider response body was not JSON",
+    },
+    {
+      id: "gemini-empty-error",
+      env: { AI_PROVIDER: "gemini", GEMINI_BASE_URL: "https://gemini.test/v1beta", GEMINI_API_KEY: "test-key" },
+      response: () => new Response("", { status: 502 }),
+      expectedWarning: "provider response body was empty",
+    },
+  ];
+  let failures = 0;
+  try {
+    for (const item of cases) {
+      globalThis.fetch = (async () => item.response()) as typeof fetch;
+      const result = await generateWithModel({ task: "tone-review", input: "Review this generated section.", mode: "live" }, item.env as unknown as NodeJS.ProcessEnv);
+      const passed = !result.validation.valid && result.warnings.includes(item.expectedWarning) && result.warnings.includes("HTTP 502");
+      console.log(`${passed ? "PASS" : "FAIL"} provider-diagnostics:${item.id} expected=pass`);
+      for (const warning of result.warnings) console.log(`  - ${warning}`);
+      if (!passed) failures += 1;
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+  return failures;
 }
 
 function validateQualityCases(): number {
@@ -209,15 +260,17 @@ async function main() {
   const seoNegativeFailures = validateSeoNegativeCases(validPages);
   const imageNegativeFailures = validateImageNegativeCases(validPages);
   const jsonLdFailures = validateJsonLdCases(validPages);
+  const renderFailures = validateRenderCases(validPages);
+  const providerDiagnosticFailures = await validateProviderDiagnosticCases();
   const generatedReportFailures = validateGeneratedReports();
   const workflowTopicFailures = await validateWorkflowTopicCases();
   const failed = results.filter((result) => !result.passed);
-  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
-    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
+  if (failed.length > 0 || !seo.valid || qualityFailures > 0 || seoNegativeFailures > 0 || imageNegativeFailures > 0 || jsonLdFailures > 0 || renderFailures > 0 || providerDiagnosticFailures > 0 || generatedReportFailures > 0 || workflowTopicFailures > 0) {
+    console.error(`Content validation failed for ${failed.length} schema case(s), ${seo.errors.length} SEO case(s), ${qualityFailures} quality case(s), ${seoNegativeFailures} SEO negative case(s), ${imageNegativeFailures} image negative case(s), ${jsonLdFailures} JSON-LD case(s), ${renderFailures} render case(s), ${providerDiagnosticFailures} provider diagnostic case(s), ${generatedReportFailures} generated-report case(s), and ${workflowTopicFailures} workflow-topic case(s).`);
     process.exit(1);
   }
 
-  console.log(`Content validation passed for ${results.length} schema case(s), including quality, image, JSON-LD, generated-report, workflow-topic, and SEO negative checks.`);
+  console.log(`Content validation passed for ${results.length} schema case(s), including quality, image, JSON-LD, render, provider diagnostic, generated-report, workflow-topic, and SEO negative checks.`);
 }
 
 main().catch((error) => {

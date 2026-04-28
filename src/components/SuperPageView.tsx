@@ -1,3 +1,4 @@
+import * as React from "react";
 import type { QualityStatus, SuperPage } from "@/super-page/types";
 import { articleJsonLd, breadcrumbJsonLd, serializeJsonLd } from "@/seo/jsonLd";
 
@@ -50,6 +51,7 @@ export function SuperPageView({ page }: { page: SuperPage }) {
         <article className="grid gap-8">
           {page.sections.map((section) => {
             const image = imagesById.get(section.imageSlotId);
+            const imageAssetPath = image?.assetPath;
             return (
               <section id={section.id} key={section.id} className="rounded-xl border border-slate-200 bg-white p-6 md:p-8">
                 <p className="audit-mono text-blue-700">Intent: {section.searchIntent}</p>
@@ -58,9 +60,9 @@ export function SuperPageView({ page }: { page: SuperPage }) {
                 <div className="prose prose-slate mt-6 max-w-none">
                   {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                 </div>
-                {image ? (
+                {image && imageAssetPath ? (
                   <figure className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
-                    <img src={image.assetPath} alt={image.alt} className="max-h-96 w-full object-cover" />
+                    <img src={imageAssetPath} alt={image.alt} className="max-h-96 w-full object-cover" />
                     <figcaption className="border-t border-slate-200 bg-white px-4 py-3 text-sm text-muted">{image.caption}</figcaption>
                   </figure>
                 ) : null}
